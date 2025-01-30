@@ -10,4 +10,8 @@ public class Constants {
         public static final int INTAKE_MOTOR_ID = 1; //TODO: set the Intake motor ID on the actual robot
         public static final double INTAKE_DEFAULT_SPEED = 0.5; //TODO: find the optimal intake speed
     }
+    public class VisionConstants {
+        public static final String LIMELIGHT_NAME = "limelight"; //TODO: set the limelight name
+        
+    }
 }
