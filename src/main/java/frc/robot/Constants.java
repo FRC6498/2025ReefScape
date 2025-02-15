@@ -4,8 +4,9 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 
 public class Constants {
     public class IntakeConstants {
-        public static final int INTAKE_MOTOR_ID = 1; //TODO: set the Intake motor ID on the actual robot
+        public static final int INTAKE_MOTOR_ID = 24;
         public static final double INTAKE_DEFAULT_SPEED = 0.5; //TODO: find the optimal intake speed
+        public static final int CANRANGE_SENSOR_ID = 25;
     }
     public class VisionConstants {
         public static final String LIMELIGHT_NAME = "limelight"; //TODO: set the limelight name
