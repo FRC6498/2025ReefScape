@@ -16,11 +16,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
- private final Intake intakeSub;
+
+
+ 
 
     // private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxSpeed = 1;
@@ -37,15 +42,35 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController driveController = new CommandXboxController(0);
-    private final CommandXboxController  operatorController = new CommandXboxController(1)
+    private final CommandXboxController  operatorController = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public RobotContainer() {
-        configureBindings();
-        intakeSub = new Intake();
+    private final Intake intakeSub;
+    private final Arm armSub;
+    private final Lift liftSub;
+    private final Vision visionSub;
 
+    public RobotContainer() {
+    
+        intakeSub = new Intake();
+        liftSub = new Lift();
+        armSub = new Arm();
+        visionSub = new Vision();
+        configureBindings();
     }
+ 
+         public Command intakeCoral() {
+            return (intakeSub.runIntake());
+        }
+
+        public Command ejectIntake() {
+            return (intakeSub.ejectIntake());
+        }
+
+        public Command stopIntakeCoral() {
+            return (intakeSub.stopIntake());
+        }
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -86,15 +111,15 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        operatorController.x().onTrue(intakeCoral());
-        operatorController.y().whileTrue(reverseIntake());        
-            }
-        private Command intakeCoral() {
-            return (intakeSub.)
-        }
-         private Command reverseIntake() {
-            return (intakeSub.reverseIntake());
-         }
+
+            
+        operatorController.x().whileTrue(intakeCoral()).whileFalse(stopIntakeCoral());
+        operatorController.y().whileTrue(ejectIntake()).whileFalse(stopIntakeCoral());
+    
+    }
+
+
+     
         
             public Command getAutonomousCommand() {
         return Commands.print("No autonomous command configured");
