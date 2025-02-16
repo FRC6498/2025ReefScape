@@ -148,7 +148,7 @@ public class Lift extends SubsystemBase {
   //                                                                                   ___keep units the same__
   //                                                                                  |                        |
   //                                                                                  v                        v 
-  public Command liftToDistanceProfiled(double relativeDistanceTicks /*(distance * gear ratio * final gear circumference / 2048)*/){ //TODO:: get the gear ratio and convert this parameter to desired height to raise to
+  public Command liftToDistanceProfiled(double relativeDistanceTicks /*(distance * gear ratio * final gear circumference * 2048)*/){ //TODO:: get the gear ratio and convert this parameter to desired height to raise to
     return startRun(()-> {
       timer.restart(); //restart timer so motion profile starts at the beginning
       initialLeftDistance = leftMotor.getPosition().getValueAsDouble() * 2048 /*convert rotations to ticks*/;
@@ -157,13 +157,13 @@ public class Lift extends SubsystemBase {
     ()-> {
       double currentTime = timer.get();
       TrapezoidProfile.State currentLeftSetpoint = 
-      elevatorVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initialLeftDistance, 0), new TrapezoidProfile.State(initialLeftDistance + relativeDistanceTicks, 0)); // remove the initalDistance from the desired final state of the profile to make the ticks absolute
+      elevatorVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initialLeftDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0)); // remove the initalDistance from the desired final state of the profile to make the ticks absolute
       TrapezoidProfile.State currentRightSetpoint = 
-      elevatorVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initialRightDistance, 0), new TrapezoidProfile.State(initialRightDistance + relativeDistanceTicks, 0));
+      elevatorVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initialRightDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0));
       TrapezoidProfile.State desiredStateLeft = 
-      elevatorVoltageProfile.calculate(currentTime + Constants.LiftConstants.Dt, new TrapezoidProfile.State(initialLeftDistance, 0), new TrapezoidProfile.State(initialLeftDistance + relativeDistanceTicks, 0));
+      elevatorVoltageProfile.calculate(currentTime + Constants.LiftConstants.Dt, new TrapezoidProfile.State(initialLeftDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0));
       TrapezoidProfile.State desiredStateRight = 
-      elevatorVoltageProfile.calculate(currentTime + Constants.LiftConstants.Dt, new TrapezoidProfile.State(initialRightDistance, 0), new TrapezoidProfile.State(initialRightDistance + relativeDistanceTicks, 0));
+      elevatorVoltageProfile.calculate(currentTime + Constants.LiftConstants.Dt, new TrapezoidProfile.State(initialRightDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0));
       setMotorStates(currentRightSetpoint, currentLeftSetpoint, desiredStateRight, desiredStateLeft);
     }).until(()-> elevatorVoltageProfile.isFinished(0));
   }

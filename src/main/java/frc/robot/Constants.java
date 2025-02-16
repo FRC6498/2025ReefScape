@@ -39,6 +39,6 @@ public class Constants {
         //keep it slow at the start so you dont break something
         public static final double MAX_VELOCITY = 0.5;
         public static final double MAX_ACCELERATION = 0.1;
-        public static final double Dt = 0.25; // time to advance trapazoid profile calculations(seconds)        
+        public static final double Dt = 0.1; // time to advance trapazoid profile calculations(seconds)        
     }
 }

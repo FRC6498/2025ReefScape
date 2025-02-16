@@ -8,6 +8,9 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+
+import org.ejml.simple.SimpleMatrix;
+
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
@@ -33,7 +36,6 @@ public class Arm extends SubsystemBase {
   private final MutAngle armMotorAngle;
   private final MutAngularVelocity armMotorVelo; 
   private final MutAngularAcceleration armMotorAccel; 
-  public final SysIdRoutine armRoutine;
   /** Creates a Arm */
   public Arm() {
     armFeedforward = new ArmFeedforward(Constants.ArmConstants.ARM_MOTOR_CONFIG.kS, Constants.ArmConstants.ARM_MOTOR_CONFIG.kG, Constants.ArmConstants.ARM_MOTOR_CONFIG.kV);
@@ -43,8 +45,7 @@ public class Arm extends SubsystemBase {
     armMotorAngle = Radians.mutable(0);
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
-    armRoutine = ne
- SysidRoutine    
+
   }
   
 
@@ -72,5 +73,6 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Arm Postiion", armPosition());
   }
 }
