@@ -9,20 +9,16 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import org.ejml.simple.SimpleMatrix;
 
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.units.measure.MutAcceleration;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
-import edu.wpi.first.units.measure.MutVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,6 +34,9 @@ public class Arm extends SubsystemBase {
   private final MutAngularAcceleration armMotorAccel; 
   private final SysIdRoutine armRoutine;
   /** Creates a Arm */
+
+  //TODO:: Configure an offset for the arm motor so 0 in at the intake position
+
   public Arm() {
     armFeedforward = new ArmFeedforward(Constants.ArmConstants.ARM_MOTOR_CONFIG.kS, Constants.ArmConstants.ARM_MOTOR_CONFIG.kG, Constants.ArmConstants.ARM_MOTOR_CONFIG.kV);
     armMotor = new TalonFX(Constants.ArmConstants.ARM_MOTOR_ID);
@@ -46,7 +45,7 @@ public class Arm extends SubsystemBase {
     armMotorAngle = Radians.mutable(0);
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
-
+    
     armRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(), 
       new SysIdRoutine.Mechanism(
@@ -71,7 +70,8 @@ public class Arm extends SubsystemBase {
     return armRoutine.dynamic(direction);
   }
 
-  public Command runToPosition(double positionTicks){
+  public Command runToAngle(Angle angle){ // 0 is assumed to be the intake position
+    double positionTicks = angle.magnitude() * 2048/2*Math.PI /* ticks per rad */;
     return run(()-> {
       armMotor.setControl(
         new PositionDutyCycle(positionTicks) // where you want to go
