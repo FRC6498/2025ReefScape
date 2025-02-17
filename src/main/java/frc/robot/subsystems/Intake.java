@@ -4,16 +4,26 @@
 
 package frc.robot.subsystems;
 
+
+
+import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
-import frc.robot.Constants;
+
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   private final TalonFX intakeMotor;
+  private final CANrange armSensor; 
+
   public Intake() {
+    armSensor = new CANrange(Constants.IntakeConstants.CANRANGE_SENSOR_ID);
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID);
     intakeMotor.get();
   }
@@ -22,19 +32,19 @@ public class Intake extends SubsystemBase {
    * @return
    * Command
    */
+
+   public Command ejectIntake(){
+    return this.run(()-> {intakeMotor.set(Constants.IntakeConstants.INTAKE_DEFAULT_SPEED);});
+   }
   public Command runIntake(){
-    return this.runOnce(()-> {intakeMotor.set(Constants.IntakeConstants.INTAKE_DEFAULT_SPEED);});
+    return this.run(()-> {intakeMotor.set(Constants.IntakeConstants.INTAKE_DEFAULT_SPEED);})
+               .until(intakeStop())
+               .andThen(stopIntake());
   }
-  /**
-   * Runs the intake at a custom speed
-   * @param speed
-   * (double) speed to run the intake at (from -1 to 1)
-   * @return
-   * Command
-   */
-  public Command runIntake(double speed){
-    return this.runOnce(()-> {intakeMotor.set(speed);});
-  }
+
+
+
+  
   /**
    * stops the intake
    * @return
@@ -44,11 +54,28 @@ public class Intake extends SubsystemBase {
     return this.runOnce(()-> {intakeMotor.set(0);});
   }
   /**
+   * Gets the distance coral is from the range 
+   * 
+   * @return
+   * double
+   */
+@Logged
+public double getDistance() {
+  return armSensor.getDistance().getValueAsDouble();
+}
+
+ public BooleanSupplier intakeStop() {
+    
+    return () -> (getDistance() < .1 && armSensor.getIsDetected().getValue());
+
+ }
+  /**
    * Gets the speed that the intake is currently running at
    * 
    * @return
    * double
    */
+
   @Logged
   public double getSpeed() {
     return intakeMotor.get();
@@ -57,6 +84,6 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
+    SmartDashboard.putBoolean("detected", intakeStop().getAsBoolean());
   }
 }
