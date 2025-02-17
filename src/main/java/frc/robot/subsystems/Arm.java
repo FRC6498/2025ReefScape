@@ -43,10 +43,29 @@ public class Arm extends SubsystemBase {
     armMotorAngle = Radians.mutable(0);
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
-    armRoutine = ne
- SysidRoutine    
+    armRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(), 
+      new SysIdRoutine.Mechanism(
+        voltage -> {
+          armMotor.setVoltage(voltage.magnitude());
+        }, 
+        log -> {
+          log.motor("armMotor")
+          .voltage(armMotorVoltage.mut_replace(armMotor.getMotorVoltage().getValue()))
+          .angularVelocity(armMotorVelo.mut_replace(armMotor.getVelocity().getValue()))
+          .angularAcceleration(armMotorAccel.mut_replace(armMotor.getAcceleration().getValue()))
+          .angularPosition(armMotorAngle.mut_replace(armMotor.getPosition().getValue()));
+        },
+      this
+      )
+    );    
   }
-  
+  public Command armSysidQuasistatic(SysIdRoutine.Direction direction) {
+    return armRoutine.quasistatic(direction);
+  }  
+  public Command armSysidDynamic(SysIdRoutine.Direction direction) {
+    return armRoutine.dynamic(direction);
+  }
 
   public Command runToPosition(double positionTicks){
     return run(()-> {
