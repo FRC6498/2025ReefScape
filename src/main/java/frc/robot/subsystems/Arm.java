@@ -4,19 +4,23 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Rotations;
 
-
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.units.measure.MutAngularAcceleration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,6 +49,11 @@ public class Arm extends SubsystemBase {
     armMotorAngle = Radians.mutable(0);
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
+    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Degrees.of(19))
+    .withReverseSoftLimitThreshold(Degrees.of(-90)).withForwardSoftLimitEnable(true)
+    .withReverseSoftLimitEnable(true));
+    armMotor.setNeutralMode(NeutralModeValue.Brake);
+    armMotor.getConfigurator().apply(Constants.ArmConstants.ARM_MOTOR_CONFIG);
     
     armRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(), 
@@ -70,20 +79,27 @@ public class Arm extends SubsystemBase {
     return armRoutine.dynamic(direction);
   }
 
+
+
   public Command runToAngle(Angle angle){ // 0 is assumed to be the intake position
-    double positionTicks = angle.magnitude() * 2048/2*Math.PI /* ticks per rad */;
+    angle.times(46.69);
     return run(()-> {
       armMotor.setControl(
-        new PositionDutyCycle(positionTicks) // where you want to go
-        .withPosition(armMotor.getPosition().getValueAsDouble()) //where you are 
+        new PositionVoltage(angle.in(Rotations)) // where you want to go
+        .withPosition(armMotor.getPosition().getValue().in(Rotations)) //where you are 
         .withFeedForward(
           armFeedforward.calculate(
-            armMotor.getPosition().getValueAsDouble(),
-            armMotor.getVelocity().getValueAsDouble()
+           Math.PI/2* - angle.in(Radians),
+            0
             )
         )
       );
     });
+  }
+
+
+  public Command stopArm() {
+    return runOnce(()-> armMotor.setVoltage(0));
   }
 
   public double armPosition() {

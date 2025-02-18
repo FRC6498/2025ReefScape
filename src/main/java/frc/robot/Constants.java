@@ -9,13 +9,13 @@ public class Constants {
         public static final int CANRANGE_SENSOR_ID = 25;
     }
     public class ArmConstants {
-        public static final int ARM_MOTOR_ID = 22;
+        public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() //TODO: run sysid on all the lift motors
-        .withKA(0)//Feedforward gains
-        .withKG(0)
-        .withKS(0)
-        .withKV(0)
-        .withKP(0)//PID 
+        .withKA(0.0028603)//Feedforward gains
+        .withKG(0.05141)
+        .withKS(0.20093)
+        .withKV(0.1069)
+        .withKP(0.010679)//PID 
         .withKI(0)
         .withKD(0);
 
