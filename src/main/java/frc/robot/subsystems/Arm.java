@@ -113,35 +113,17 @@ public class Arm extends SubsystemBase {
     angle.minus(armMotor.getPosition().getValue()); //convert to 0 relative
     return startRun(()-> {
       armTimer.restart(); //restart timer so motion profile starts at the beginning
-      initalDistance = armMotor.getPosition().getValue().in(Rotations);
+      initalDistance = armMotor.getPosition().getValue().in(Rotations) *2048;
     }, 
     ()-> {
       double currentTime = armTimer.get();
       TrapezoidProfile.State currentSetpoint = 
-      armVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(0, 0)); // remove the initalDistance from the desired final state of the profile to make the ticks absolute
+      armVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(angle.in(Rotations) *2048, 0)); // remove the initalDistance from the desired final state of the profile to make the ticks absolute
       TrapezoidProfile.State desiredState = 
-      armVoltageProfile.calculate(currentTime + Constants.ArmConstants.Dt, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(angle.in(Rotations), 0));
+      armVoltageProfile.calculate(currentTime + Constants.ArmConstants.Dt, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(angle.in(Rotations) *2048, 0));
       setMotorStates(currentSetpoint, desiredState);
     }).until(()-> armVoltageProfile.isFinished(0));
   }
-
-  public Command runToAngle(Angle angle){ // 0 is assumed to be the intake position
-    angle.times(46.69);
-    return run(()-> {
-      armMotor.setControl(
-        new PositionVoltage(angle.in(Rotations)) // where you want to go
-        .withPosition(armMotor.getPosition().getValue().in(Rotations)) //where you are 
-        .withFeedForward(
-          armFeedforward.calculate(
-           Math.PI/2* - angle.in(Radians), //angle 0 has to be horizontal
-            0
-            )
-        )
-      );
-    });
-  }
-
-
   public Command stopArm() {
     return runOnce(()-> armMotor.setVoltage(0));
   }
