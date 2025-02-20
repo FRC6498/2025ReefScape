@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 
+import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
+
 public class Constants {
     public class IntakeConstants {
         public static final int INTAKE_MOTOR_ID = 24;
@@ -18,7 +20,9 @@ public class Constants {
         .withKP(0.010679)//PID 
         .withKI(0)
         .withKD(0);
-
+        public static final double ARM_MAX_VELOCITY = 0.5;
+        public static final double ARM_MAX_ACCELERATION = 0.5;
+        public static final double Dt = 0.1;
     }
     public class VisionConstants {
         public static final String LIMELIGHT_NAME = "limelight"; //TODO: set the limelight name
