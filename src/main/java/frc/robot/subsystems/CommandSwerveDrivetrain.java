@@ -8,12 +8,18 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +29,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -123,6 +130,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
+         SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+            .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        try{
+            Constants.RobotConstants.config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        AutoBuilder.configure(
+            this::getRobotPose, 
+            this::resetPose, 
+            this::getRobotRelativeSpeeds,
+            (speeds)-> applyRequest(()-> drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), 
+            new PPHolonomicDriveController(
+                new PIDConstants(modules[0].DriveMotorGains.kP, modules[0].DriveMotorGains.kI, modules[0].DriveMotorGains.kD),
+                new PIDConstants(modules[0].SteerMotorGains.kP, modules[0].SteerMotorGains.kI,modules[0].SteerMotorGains.kD)), 
+            Constants.RobotConstants.config, ()-> {return false;}, this);
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -147,6 +171,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
+        SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+            .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        try{
+            Constants.RobotConstants.config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        AutoBuilder.configure(
+            this::getRobotPose, 
+            this::resetPose, 
+            this::getRobotRelativeSpeeds,
+            (speeds)-> applyRequest(()-> drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), 
+            new PPHolonomicDriveController(
+                new PIDConstants(modules[0].DriveMotorGains.kP, modules[0].DriveMotorGains.kI, modules[0].DriveMotorGains.kD),
+                new PIDConstants(modules[0].SteerMotorGains.kP, modules[0].SteerMotorGains.kI,modules[0].SteerMotorGains.kD)), 
+            Constants.RobotConstants.config, ()-> {return false;}, this);
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -179,6 +220,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
+        SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+            .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        try{
+            Constants.RobotConstants.config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        AutoBuilder.configure(
+            this::getRobotPose, 
+            this::resetPose, 
+            this::getRobotRelativeSpeeds,
+            (speeds)-> applyRequest(()-> drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), 
+            new PPHolonomicDriveController(
+                new PIDConstants(modules[0].DriveMotorGains.kP, modules[0].DriveMotorGains.kI, modules[0].DriveMotorGains.kD),
+                new PIDConstants(modules[0].SteerMotorGains.kP, modules[0].SteerMotorGains.kI,modules[0].SteerMotorGains.kD)), 
+            Constants.RobotConstants.config, ()-> {return false;}, this);
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -262,6 +320,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+    }
+    public Pose2d getRobotPose() {
+        return this.getState().Pose;
+    }
+    public ChassisSpeeds getRobotRelativeSpeeds() {
+        return this.getState().Speeds;
     }
 
     /**

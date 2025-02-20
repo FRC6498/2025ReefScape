@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.pathplanner.lib.config.RobotConfig;
 
 public class Constants {
     public class IntakeConstants {
@@ -40,5 +41,9 @@ public class Constants {
         public static final double MAX_VELOCITY = 0.5;
         public static final double MAX_ACCELERATION = 0.1;
         public static final double Dt = 0.1; // time to advance trapazoid profile calculations(seconds)        
+    }
+    public static final class RobotConstants{
+        public static RobotConfig config;
+
     }
 }

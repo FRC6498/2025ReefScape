@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -57,6 +58,8 @@ public class RobotContainer {
         liftSub = new Lift();
         armSub = new Arm();
         visionSub = new Vision();
+        NamedCommands.registerCommand("RunIntake", intakeSub.runIntake());
+        NamedCommands.registerCommand("EjectIntake", intakeSub.ejectIntake());
         configureBindings();
     }
  
