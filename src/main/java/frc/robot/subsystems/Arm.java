@@ -103,23 +103,24 @@ public class Arm extends SubsystemBase {
       new PositionDutyCycle(next.position)
       .withPosition(current.position)
       .withFeedForward(
-        armFeedforward.calculateWithVelocities((-Math.PI/2 + Rotations.of(armMotor.getPosition().getValue().magnitude()).in(Radians)), current.velocity,next.velocity)
+        armFeedforward.calculateWithVelocities((-Math.PI/2 + armMotor.getPosition().getValue().in(Radians)), current.velocity,next.velocity)
           / RobotController.getBatteryVoltage() //devide by battery voltage to normalize feedforward to [-1, 1]
           )
         );
   }
   private double initalDistance = 0;
   public Command runToAngleProfiled(Angle angle){ 
+    angle.minus(armMotor.getPosition().getValue()); //convert to 0 relative
     return startRun(()-> {
       armTimer.restart(); //restart timer so motion profile starts at the beginning
-      initalDistance = armMotor.getPosition().getValueAsDouble() * 2048;
+      initalDistance = armMotor.getPosition().getValue().in(Rotations);
     }, 
     ()-> {
       double currentTime = armTimer.get();
       TrapezoidProfile.State currentSetpoint = 
       armVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(0, 0)); // remove the initalDistance from the desired final state of the profile to make the ticks absolute
       TrapezoidProfile.State desiredState = 
-      armVoltageProfile.calculate(currentTime + Constants.ArmConstants.Dt, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(angle.magnitude(), 0));
+      armVoltageProfile.calculate(currentTime + Constants.ArmConstants.Dt, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(angle.in(Rotations), 0));
       setMotorStates(currentSetpoint, desiredState);
     }).until(()-> armVoltageProfile.isFinished(0));
   }
