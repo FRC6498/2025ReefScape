@@ -171,6 +171,23 @@ public class Lift extends SubsystemBase {
    * this will kill every command running on the robot when it is executed. use with caution bc I dont know what will happen
    * @return
    */
+
+public Command scrimageSetup() {
+  return runOnce(()-> {
+    leftMotor.set(.5);
+      rightMotor.set(.5);
+  });
+}
+
+public Command liftStop() {
+  return runOnce(()-> {
+    leftMotor.set(.0);
+      rightMotor.set(0);
+  });
+}
+
+
+
   public Command hardStopAll_DANGER() {
     return runOnce(()-> {
       CommandScheduler.getInstance().cancelAll(); // this will

@@ -128,7 +128,7 @@ public class RobotContainer {
    
     
     public Command testArm() {
-        return (armSub.runToAngle(Degrees.of(10)));
+        return (armSub.runToAngleProfiled(Degrees.of(10)));
     }
 
     public Command reverseArmSysidDynamic() {

@@ -10,6 +10,7 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,6 +27,7 @@ public class Intake extends SubsystemBase {
     armSensor = new CANrange(Constants.IntakeConstants.CANRANGE_SENSOR_ID);
     intakeMotor = new TalonFX(Constants.IntakeConstants.INTAKE_MOTOR_ID);
     intakeMotor.get();
+    intakeMotor.setNeutralMode(NeutralModeValue.Brake);
   }
   /**
    * Runs the intake at speed IntakeConstants.INTAKE_DEFAULT_SPEED
