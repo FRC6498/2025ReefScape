@@ -11,7 +11,10 @@ import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -52,11 +55,16 @@ public class Arm extends SubsystemBase {
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
     
-    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Rotations.of(9))
+    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Rotations.of(18))
     .withReverseSoftLimitThreshold(Rotations.of(-.2)).withForwardSoftLimitEnable(true)
     .withReverseSoftLimitEnable(true));
     armMotor.setNeutralMode(NeutralModeValue.Brake);
-    armMotor.getConfigurator().apply(Constants.ArmConstants.ARM_MOTOR_CONFIG);
+
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0 = Constants.ArmConstants.ARM_MOTOR_CONFIG;
+    config.MotionMagic = Constants.ArmConstants.ARM_MOTION_CONFIGS;
+    armMotor.getConfigurator().apply(config);
+    armMotor.setNeutralMode(NeutralModeValue.Brake);
     
     
     
@@ -85,12 +93,19 @@ public class Arm extends SubsystemBase {
   }
 
   public Command runToRotationsMagic(double setpointRotations) {
-    MotionMagicVoltage request = new MotionMagicVoltage(setpointRotations);
-    return run(()-> armMotor.setControl(request));
+    MotionMagicVoltage request = new MotionMagicVoltage(armMotor.getPosition().getValueAsDouble());
+    return run(()-> armMotor.setControl(request.withPosition(setpointRotations)));
+  }
+  
+  public double getMotionMagic() {
+  return armMotor.getMotionMagicIsRunning().getValueAsDouble();
   }
   
   public Command stopArm() {
     return runOnce(()-> armMotor.setVoltage(0));
+  }
+  public BooleanSupplier canRaise(){
+    return () -> armMotor.getPosition().getValueAsDouble() > 4; 
   }
 
   public double armPosition() {
@@ -110,6 +125,8 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("mmmmmmm", getMotionMagic());
     SmartDashboard.putNumber("Arm Postiion", armPosition());
+
   }
 }
