@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.ForwardReference;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -57,11 +58,12 @@ public class RobotContainer {
     private final Vision visionSub;
 
     public RobotContainer() {
-    
         intakeSub = new Intake();
         liftSub = new Lift();
         armSub = new Arm();
         visionSub = new Vision();
+        NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
+        NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
         configureBindings();
     }
  
