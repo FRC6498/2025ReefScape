@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
@@ -15,13 +16,19 @@ import java.util.function.BooleanSupplier;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,10 +42,12 @@ public class Arm extends SubsystemBase {
   private final MutAngularVelocity armMotorVelo; 
   private final MutAngularAcceleration armMotorAccel; 
   private final SysIdRoutine armRoutine;
+  /** Creates a Arm */
 
   //TODO:: Configure an offset for the arm motor so 0 in at the intake position
 
   public Arm() {
+    
     armMotor = new TalonFX(Constants.ArmConstants.ARM_MOTOR_ID);
     //sysid
     armMotorVoltage = Volts.mutable(0);
@@ -57,6 +66,8 @@ public class Arm extends SubsystemBase {
     armMotor.getConfigurator().apply(config);
     armMotor.setNeutralMode(NeutralModeValue.Brake);
     
+    
+    
     armRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(), 
       new SysIdRoutine.Mechanism(
@@ -74,11 +85,9 @@ public class Arm extends SubsystemBase {
       )
     );    
   }
-
   public Command armSysidQuasistatic(SysIdRoutine.Direction direction) {
     return armRoutine.quasistatic(direction);
   }  
-
   public Command armSysidDynamic(SysIdRoutine.Direction direction) {
     return armRoutine.dynamic(direction);
   }
@@ -102,10 +111,22 @@ public class Arm extends SubsystemBase {
   public double armPosition() {
     return armMotor.getPosition().getValueAsDouble();
   }
-  
+
+  public Command scrimageArmForward() {
+    return runOnce(() -> armMotor.set(.1));
+  }
+
+  public Command scrimageArmBackward() {
+    return runOnce(() -> armMotor.set(-0.1));
+  }
+  // runToPosition(10);
+  // runToPosition(20);
+  // runToPosition(30);
   @Override
   public void periodic() {
+    // This method will be called once per scheduler run
     SmartDashboard.putNumber("mmmmmmm", getMotionMagic());
     SmartDashboard.putNumber("Arm Postiion", armPosition());
+
   }
 }
