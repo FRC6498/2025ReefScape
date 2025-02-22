@@ -18,6 +18,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
@@ -35,6 +36,7 @@ public class Arm extends SubsystemBase {
   private final MutAngularVelocity armMotorVelo;
   private final MutAngularAcceleration armMotorAccel;
   private final SysIdRoutine armRoutine;
+  private final ArmFeedforward armFeedForward;
 
 
   //TODO:: Configure an offset for the arm motor so 0 in at the intake position
@@ -58,6 +60,7 @@ public class Arm extends SubsystemBase {
     armMotor.getConfigurator().apply(config);
     armMotor.setNeutralMode(NeutralModeValue.Brake);
 
+    armFeedForward = new ArmFeedforward(Constants.ArmConstants.ARM_MOTOR_CONFIG.kS, Constants.ArmConstants.ARM_MOTOR_CONFIG.kG, Constants.ArmConstants.ARM_MOTOR_CONFIG.kV);
     armRoutine = new SysIdRoutine(
         new SysIdRoutine.Config(),
         new SysIdRoutine.Mechanism(
@@ -84,7 +87,12 @@ public class Arm extends SubsystemBase {
 
   public Command runToRotationsMagic(double setpointRotations) {
     MotionMagicVoltage request = new MotionMagicVoltage(armMotor.getPosition().getValueAsDouble());
-    return run(() -> armMotor.setControl(request.withPosition(setpointRotations)));
+    return run(() -> 
+    armMotor.setControl(
+      request.withPosition(setpointRotations)
+        .withFeedForward(armFeedForward.calculate(setpointRotations*2*Math.PI, 0))
+      )
+    );
   }
 
   public double getMotionMagic() {
