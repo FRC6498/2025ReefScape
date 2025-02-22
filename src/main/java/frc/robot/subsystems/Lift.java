@@ -12,6 +12,8 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.Constants.LiftConstants;
 
 public class Lift extends SubsystemBase {
@@ -37,7 +40,7 @@ public class Lift extends SubsystemBase {
   private final MutAngularVelocity liftVelocityRight = RadiansPerSecond.mutable(0);
   private final MutAngularAcceleration liftAccelerationRight = RadiansPerSecondPerSecond.mutable(0);
   private final SysIdRoutine routine;
-
+  private final ElevatorFeedforward liftFeedforward;
   public Lift() {
     // configure motors
     leftMotor = new TalonFX(LiftConstants.LEFT_LIFT_MOTOR_ID);
@@ -51,6 +54,7 @@ public class Lift extends SubsystemBase {
     rightMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
     leftMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
 
+    liftFeedforward = new ElevatorFeedforward(Constants.LiftConstants.LIFT_MOTOR_CONFIG.kS,Constants.LiftConstants.LIFT_MOTOR_CONFIG.kS,Constants.LiftConstants.LIFT_MOTOR_CONFIG.kS);
     // configure Sysid
     // NOTE::
     // anything with variable -> {*some other stuff*}
@@ -106,8 +110,13 @@ public class Lift extends SubsystemBase {
   }
 
   public Command runToRotations(double rotations) {
-    MotionMagicVoltage request = new MotionMagicVoltage(rotations);
-    return run(() -> rightMotor.setControl(request));
+    MotionMagicVoltage request = new MotionMagicVoltage(rightMotor.getPosition().getValueAsDouble());
+    return run(() -> 
+      rightMotor.setControl(
+        request.withPosition(rotations)
+        .withFeedForward(liftFeedforward.calculate(0))
+      )
+    );
   }
 
   public Command scrimageSetup(double speed) {
