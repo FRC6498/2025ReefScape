@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -49,8 +50,11 @@ public class Lift extends SubsystemBase {
   /** Creates a new Lift. */
   public Lift() {
     //configure motors 
+  
     leftMotor = new TalonFX(Constants.LiftConstants.LEFT_LIFT_MOTOR_ID);
     rightMotor = new TalonFX(Constants.LiftConstants.RIGHT_LIFT_MOTOR_ID);
+    rightMotor.get();
+    leftMotor.get();
     //configure Feedforward and motion profies
     liftFeedforward = new ElevatorFeedforward(
       Constants.LiftConstants.LIFT_MOTOR_CONFIG.kS,
@@ -66,6 +70,7 @@ public class Lift extends SubsystemBase {
     );
     timer = new Timer();
     //Configure Motors (should not affect sysid)
+   
     rightMotor.getConfigurator().apply(Constants.LiftConstants.LIFT_MOTOR_CONFIG);
     leftMotor.getConfigurator().apply(Constants.LiftConstants.LIFT_MOTOR_CONFIG);
     
@@ -121,6 +126,8 @@ public class Lift extends SubsystemBase {
           / RobotController.getBatteryVoltage()
           )
         );
+    rightMotor.setNeutralMode(NeutralModeValue.Brake);
+    leftMotor.setNeutralMode(NeutralModeValue.Brake);
   }
   /**
    * Dynamic Sysid test for the lift - will run the motors at at 7v (~60%) power until the test is stopped 
@@ -172,17 +179,24 @@ public class Lift extends SubsystemBase {
    * @return
    */
 
-public Command scrimageSetup() {
+public Command scrimageSetup(double speed) {
   return runOnce(()-> {
-    leftMotor.set(.5);
-      rightMotor.set(.5);
+    leftMotor.set(speed);
+      rightMotor.set(speed);
   });
 }
 
 public Command liftStop() {
   return runOnce(()-> {
-    leftMotor.set(.0);
-      rightMotor.set(0);
+    leftMotor.stopMotor();
+      rightMotor.stopMotor();
+  });
+}
+
+public Command liftHold() {
+  return runOnce(()-> {
+    leftMotor.setVoltage(.5);
+    rightMotor.setVoltage(.5);
   });
 }
 

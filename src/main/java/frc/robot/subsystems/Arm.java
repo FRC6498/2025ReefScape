@@ -8,12 +8,11 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -59,8 +58,8 @@ public class Arm extends SubsystemBase {
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
     
-    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Degrees.of(19))
-    .withReverseSoftLimitThreshold(Degrees.of(-90)).withForwardSoftLimitEnable(true)
+    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Rotations.of(9))
+    .withReverseSoftLimitThreshold(Rotations.of(-.2)).withForwardSoftLimitEnable(true)
     .withReverseSoftLimitEnable(true));
     armMotor.setNeutralMode(NeutralModeValue.Brake);
     armMotor.getConfigurator().apply(Constants.ArmConstants.ARM_MOTOR_CONFIG);
@@ -130,6 +129,14 @@ public class Arm extends SubsystemBase {
 
   public double armPosition() {
     return armMotor.getPosition().getValueAsDouble();
+  }
+
+  public Command scrimageArmForward() {
+    return runOnce(() -> armMotor.set(.1));
+  }
+
+  public Command scrimageArmBackward() {
+    return runOnce(() -> armMotor.set(-0.1));
   }
   // runToPosition(10);
   // runToPosition(20);

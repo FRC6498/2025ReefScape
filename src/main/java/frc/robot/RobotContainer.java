@@ -4,14 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.ForwardReference;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,8 +30,8 @@ public class RobotContainer {
 
  
 
-    // private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxSpeed = 1;
+    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    // private double MaxSpeed = 1;
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     // private double MaxAngularRate = RotationsPerSecond.of(0.01).in(RadiansPerSecond);
 
@@ -69,6 +67,10 @@ public class RobotContainer {
             return (intakeSub.runIntake().until(intakeSub.intakeStop()).andThen(intakeSub.stopIntake()));
         }
 
+        public Command intakeAlgae() {
+            return (intakeSub.intakeAlgaeCommand());
+        }
+
         public Command ejectIntake() {
             return (intakeSub.ejectIntake());
         }
@@ -85,7 +87,7 @@ public class RobotContainer {
              drivetrain.applyRequest(() -> 
                  drive.withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                      .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-      .withRotationalRate(-driveController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+      .withRotationalRate(driveController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
              )
          );
         
@@ -120,13 +122,37 @@ public class RobotContainer {
             
         operatorController.x().whileTrue(intakeCoral()).whileFalse(stopIntakeCoral());
         operatorController.y().whileTrue(ejectIntake()).whileFalse(stopIntakeCoral());
-        operatorController.a().whileTrue(testArm()).whileFalse(stopArm());
+        operatorController.a().whileTrue(scrimageArmForward()).whileFalse(stopArm());
+        operatorController.b().whileTrue(scrimageArmBackward()).whileFalse(stopArm());
+        operatorController.leftBumper().whileTrue(scrimageSetupFast()).whileFalse(liftStop().andThen(liftHold()));
+        operatorController.rightBumper().whileTrue(scrimageSetupDown()).whileFalse(liftStop());
         
         
     }
 
    
-    
+    public Command scrimageSetupDown() {
+        return (liftSub.scrimageSetup(-.04));
+    }
+
+    public Command scrimageArmForward() {
+    return (armSub.scrimageArmForward());
+  }
+
+  public Command scrimageArmBackward() {
+    return (armSub.scrimageArmBackward());
+  }
+  
+  public Command scrimageSetupFast() {
+  return (liftSub.scrimageSetup(.1));
+}
+    public Command liftHold() {
+    return (liftSub.liftHold());
+    }
+
+public Command liftStop() {
+  return (liftSub.liftStop());
+}
     public Command testArm() {
         return (armSub.runToAngleProfiled(Degrees.of(10)));
     }

@@ -44,6 +44,10 @@ public class Intake extends SubsystemBase {
                .andThen(stopIntake());
   }
 
+  public Command intakeAlgaeCommand() {
+    return this.run(()-> {intakeMotor.set(.2);});
+  }
+
 
 
   
