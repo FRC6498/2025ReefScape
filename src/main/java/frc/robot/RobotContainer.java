@@ -54,6 +54,7 @@ public class RobotContainer {
     private final Lift liftSub;
     private final Vision visionSub;
 
+
     public RobotContainer() {
     
         intakeSub = new Intake();
@@ -122,13 +123,16 @@ public class RobotContainer {
             
         operatorController.x().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
         operatorController.y().whileTrue(intakeSub.ejectIntake()).whileFalse(intakeSub.stopIntake());
-        operatorController.a().onTrue(armSub.runToRotationsMagic(5));
-        operatorController.leftBumper().whileTrue(scrimageSetupFast()).whileFalse(liftStop().andThen(liftHold()));
-        operatorController.rightBumper().whileTrue(scrimageSetupDown()).whileFalse(liftStop());
+        operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
+        operatorController.a().onTrue(armSub.runToRotationsMagic(17)).whileFalse((stopArm()));
+        operatorController.b().onTrue(armSub.runToRotationsMagic(0)).whileFalse((stopArm()));
+        operatorController.leftBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise()).until(armSub.canRaise()).andThen(scrimageSetupFast())).whileFalse(liftStop().andThen(liftHold()));
+        operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise()).until(armSub.canRaise()).andThen(scrimageSetupDown())).whileFalse(liftStop());
         
         
     }
 
+    
    
     public Command scrimageSetupDown() {
         return (liftSub.scrimageSetup(-.04));
@@ -153,7 +157,7 @@ public Command liftStop() {
   return (liftSub.liftStop());
 }
     public Command testArm() {
-        return armSub.runToRotationsMagic(15);
+        return armSub.runToRotationsMagic(4);
     }
 
     public Command reverseArmSysidDynamic() {
