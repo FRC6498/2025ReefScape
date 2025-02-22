@@ -4,25 +4,28 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Rotations;
 
-import org.ejml.simple.SimpleMatrix;
-
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.units.measure.MutAngularAcceleration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.units.measure.MutAcceleration;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
-import edu.wpi.first.units.measure.MutVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,16 +40,39 @@ public class Arm extends SubsystemBase {
   private final MutAngularVelocity armMotorVelo; 
   private final MutAngularAcceleration armMotorAccel; 
   private final SysIdRoutine armRoutine;
+  private final Timer armTimer;
+  private final TrapezoidProfile armVoltageProfile;
   /** Creates a Arm */
+
+  //TODO:: Configure an offset for the arm motor so 0 in at the intake position
+
   public Arm() {
-    armFeedforward = new ArmFeedforward(Constants.ArmConstants.ARM_MOTOR_CONFIG.kS, Constants.ArmConstants.ARM_MOTOR_CONFIG.kG, Constants.ArmConstants.ARM_MOTOR_CONFIG.kV);
+    armFeedforward = new ArmFeedforward(
+      Constants.ArmConstants.ARM_MOTOR_CONFIG.kS,
+      Constants.ArmConstants.ARM_MOTOR_CONFIG.kG, 
+      Constants.ArmConstants.ARM_MOTOR_CONFIG.kV
+    );
     armMotor = new TalonFX(Constants.ArmConstants.ARM_MOTOR_ID);
     //sysid
     armMotorVoltage = Volts.mutable(0);
     armMotorAngle = Radians.mutable(0);
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
-
+    
+    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Degrees.of(19))
+    .withReverseSoftLimitThreshold(Degrees.of(-90)).withForwardSoftLimitEnable(true)
+    .withReverseSoftLimitEnable(true));
+    armMotor.setNeutralMode(NeutralModeValue.Brake);
+    armMotor.getConfigurator().apply(Constants.ArmConstants.ARM_MOTOR_CONFIG);
+    
+    armTimer = new Timer();    
+    armVoltageProfile = new TrapezoidProfile(
+      new TrapezoidProfile.Constraints(
+        Constants.ArmConstants.ARM_MAX_VELOCITY, 
+        Constants.ArmConstants.ARM_MAX_ACCELERATION
+      )
+    );
+    
     armRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(), 
       new SysIdRoutine.Mechanism(
@@ -71,19 +97,38 @@ public class Arm extends SubsystemBase {
     return armRoutine.dynamic(direction);
   }
 
-  public Command runToPosition(double positionTicks){
-    return run(()-> {
-      armMotor.setControl(
-        new PositionDutyCycle(positionTicks) // where you want to go
-        .withPosition(armMotor.getPosition().getValueAsDouble()) //where you are 
-        .withFeedForward(
-          armFeedforward.calculate(
-            armMotor.getPosition().getValueAsDouble(),
-            armMotor.getVelocity().getValueAsDouble()
-            )
-        )
-      );
-    });
+//tbh im not sure that all of the units are correct across all of these methods so if this does not work then check that
+  public void setMotorStates(TrapezoidProfile.State current,TrapezoidProfile.State next) {
+    armMotor.setControl(
+      new PositionVoltage(next.position)
+      .withFeedForward(
+        armFeedforward.calculateWithVelocities((-Math.PI/2 + armMotor.getPosition().getValue().in(Radians)), current.velocity,next.velocity)
+          / RobotController.getBatteryVoltage() //devide by battery voltage to normalize feedforward to [-1, 1]
+          )
+        );
+        SmartDashboard.putNumber("thing", armFeedforward.calculate((-Math.PI/2 + armMotor.getPosition().getValue().in(Radians)), current.velocity,next.velocity));
+  }
+  private double initalDistance = 0;
+  public Command runToAngleProfiled(Angle angle){ 
+    angle.minus(armMotor.getPosition().getValue()); //convert to 0 relative
+    angle.times(46);
+    return startRun(
+    ()-> {
+      armTimer.restart(); //restart timer so motion profile starts at the beginning
+      initalDistance = armMotor.getPosition().getValue().in(Rotations);
+    }, 
+    ()-> {
+      double currentTime = armTimer.get();
+      TrapezoidProfile.State currentSetpoint = 
+      armVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(initalDistance + angle.in(Rotations), 0)); // remove the initalDistance from the desired final state of the profile to make the ticks absolute
+      TrapezoidProfile.State desiredState = 
+      armVoltageProfile.calculate(currentTime + Constants.ArmConstants.Dt, new TrapezoidProfile.State(initalDistance, 0), new TrapezoidProfile.State(angle.in(Rotations), 0));
+      setMotorStates(currentSetpoint, desiredState);
+    }
+    ).until(()-> armVoltageProfile.isFinished(0));
+  }
+  public Command stopArm() {
+    return runOnce(()-> armMotor.setVoltage(0));
   }
 
   public double armPosition() {

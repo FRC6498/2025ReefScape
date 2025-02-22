@@ -6,15 +6,19 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.auto.NamedCommands;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.ForwardReference;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
@@ -58,13 +62,11 @@ public class RobotContainer {
         liftSub = new Lift();
         armSub = new Arm();
         visionSub = new Vision();
-        NamedCommands.registerCommand("RunIntake", intakeSub.runIntake());
-        NamedCommands.registerCommand("EjectIntake", intakeSub.ejectIntake());
         configureBindings();
     }
  
          public Command intakeCoral() {
-            return (intakeSub.runIntake());
+            return (intakeSub.runIntake().until(intakeSub.intakeStop()).andThen(intakeSub.stopIntake()));
         }
 
         public Command ejectIntake() {
@@ -118,11 +120,35 @@ public class RobotContainer {
             
         operatorController.x().whileTrue(intakeCoral()).whileFalse(stopIntakeCoral());
         operatorController.y().whileTrue(ejectIntake()).whileFalse(stopIntakeCoral());
-    
+        operatorController.a().whileTrue(testArm()).whileFalse(stopArm());
+        
+        
     }
 
+   
+    
+    public Command testArm() {
+        return (armSub.runToAngleProfiled(Degrees.of(10)));
+    }
 
-     
+    public Command reverseArmSysidDynamic() {
+        return (armSub.armSysidDynamic(SysIdRoutine.Direction.kReverse));
+    }
+
+    public Command reversearmSysidQuasistatic() {
+        return (armSub.armSysidQuasistatic(SysIdRoutine.Direction.kReverse));
+    }
+    public Command forwardArmSysidDynamic() {
+        return (armSub.armSysidDynamic(SysIdRoutine.Direction.kForward));
+    }
+
+    public Command forwardarmSysidQuasistatic() {
+        return (armSub.armSysidQuasistatic(SysIdRoutine.Direction.kForward));
+    }
+
+    public Command stopArm() {
+        return (armSub.stopArm());
+    }
         
             public Command getAutonomousCommand() {
         return Commands.print("No autonomous command configured");
