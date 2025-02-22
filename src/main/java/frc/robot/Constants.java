@@ -3,6 +3,8 @@ package frc.robot;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
+
 public class Constants {
     public class IntakeConstants {
         public static final int INTAKE_MOTOR_ID = 24;
@@ -10,16 +12,18 @@ public class Constants {
         public static final int CANRANGE_SENSOR_ID = 25;
     }
     public class ArmConstants {
-        public static final int ARM_MOTOR_ID = 22;
+        public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() //TODO: run sysid on all the lift motors
-        .withKA(0)//Feedforward gains
-        .withKG(0)
-        .withKS(0)
-        .withKV(0)
-        .withKP(0)//PID 
+        .withKA(0.0028603)//Feedforward gains
+        .withKG(0.05141)
+        .withKS(0.20093)
+        .withKV(0.1069)
+        .withKP(0.010679)//PID 
         .withKI(0)
         .withKD(0);
-
+        public static final double ARM_MAX_VELOCITY = 0.5;
+        public static final double ARM_MAX_ACCELERATION = 0.5;
+        public static final double Dt = 0.1;
     }
     public class VisionConstants {
         public static final String LIMELIGHT_NAME = "limelight"; //TODO: set the limelight name

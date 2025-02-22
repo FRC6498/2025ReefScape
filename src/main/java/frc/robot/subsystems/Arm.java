@@ -10,13 +10,10 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
-
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
@@ -46,12 +43,16 @@ public class Arm extends SubsystemBase {
 
   //TODO:: Configure an offset for the arm motor so 0 in at the intake position
 
+
+  //TODO:: Configure an offset for the arm motor so 0 in at the intake position
+
   public Arm() {
     armFeedforward = new ArmFeedforward(
       Constants.ArmConstants.ARM_MOTOR_CONFIG.kS,
       Constants.ArmConstants.ARM_MOTOR_CONFIG.kG, 
       Constants.ArmConstants.ARM_MOTOR_CONFIG.kV
     );
+
     armMotor = new TalonFX(Constants.ArmConstants.ARM_MOTOR_ID);
     //sysid
     armMotorVoltage = Volts.mutable(0);
