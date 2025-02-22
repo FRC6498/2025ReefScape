@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -26,13 +28,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.LiftConstants;
 
 public class Lift extends SubsystemBase {
 
   private final TalonFX leftMotor, rightMotor;
-  private final ElevatorFeedforward liftFeedforward;
-  private final TrapezoidProfile elevatorVoltageProfile;
-  private final Timer timer;
 
   // sysid
   //measures for the left motor
@@ -51,28 +51,16 @@ public class Lift extends SubsystemBase {
   public Lift() {
     //configure motors 
   
-    leftMotor = new TalonFX(Constants.LiftConstants.LEFT_LIFT_MOTOR_ID);
-    rightMotor = new TalonFX(Constants.LiftConstants.RIGHT_LIFT_MOTOR_ID);
+    leftMotor = new TalonFX(LiftConstants.LEFT_LIFT_MOTOR_ID);
+    rightMotor = new TalonFX(LiftConstants.RIGHT_LIFT_MOTOR_ID);
     rightMotor.get();
     leftMotor.get();
-    //configure Feedforward and motion profies
-    liftFeedforward = new ElevatorFeedforward(
-      Constants.LiftConstants.LIFT_MOTOR_CONFIG.kS,
-      Constants.LiftConstants.LIFT_MOTOR_CONFIG.kG,
-      Constants.LiftConstants.LIFT_MOTOR_CONFIG.kV,
-      Constants.LiftConstants.LIFT_MOTOR_CONFIG.kA
-      );
-    elevatorVoltageProfile = new TrapezoidProfile(
-      new TrapezoidProfile.Constraints(
-        Constants.LiftConstants.MAX_VELOCITY,
-        Constants.LiftConstants.MAX_ACCELERATION
-        )
-    );
-    timer = new Timer();
+    // slave the left side to the right side to prevent them getting out of sync
+    leftMotor.setControl(new Follower(LiftConstants.RIGHT_LIFT_MOTOR_ID, false)); 
+    
     //Configure Motors (should not affect sysid)
-   
-    rightMotor.getConfigurator().apply(Constants.LiftConstants.LIFT_MOTOR_CONFIG);
-    leftMotor.getConfigurator().apply(Constants.LiftConstants.LIFT_MOTOR_CONFIG);
+    rightMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
+    leftMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
     
     //configure Sysid
 
@@ -103,32 +91,6 @@ public class Lift extends SubsystemBase {
         .angularPosition(liftDisplacementRight.mut_replace(rightMotor.getPosition().getValue()));
       }, this));
   }
-  public void setMotorStates(
-    TrapezoidProfile.State currentRight,TrapezoidProfile.State currentLeft,
-    TrapezoidProfile.State nextRight, TrapezoidProfile.State nextLeft) {
-    leftMotor.setControl(
-      new PositionDutyCycle(nextLeft.position)
-      .withPosition(currentLeft.position)
-      .withFeedForward(
-        liftFeedforward.calculateWithVelocities(
-          currentLeft.velocity
-          ,nextLeft.velocity)
-          / RobotController.getBatteryVoltage() //devide by battery voltage to normalize feedforward to [-1, 1]
-          )
-        );
-    rightMotor.setControl(
-      new PositionDutyCycle(nextRight.position)
-      .withPosition(currentRight.position)
-      .withFeedForward(
-        liftFeedforward.calculateWithVelocities(
-          currentRight.velocity
-          ,nextRight.velocity)
-          / RobotController.getBatteryVoltage()
-          )
-        );
-    rightMotor.setNeutralMode(NeutralModeValue.Brake);
-    leftMotor.setNeutralMode(NeutralModeValue.Brake);
-  }
   /**
    * Dynamic Sysid test for the lift - will run the motors at at 7v (~60%) power until the test is stopped 
    * @param direction
@@ -145,39 +107,10 @@ public class Lift extends SubsystemBase {
   public Command liftSysidQuasistatic(SysIdRoutine.Direction direction){
     return routine.quasistatic(direction);
   }
-  private double initialLeftDistance, initialRightDistance;
-  /**
-   * executes a trapazoid profile to run the elevator up to a desired height 
-   * @param relativeDistanceTicks
-   *  - do (distance * gear ratio * final gear circumference / 2048) to convert inches of height to ticks
-   * @return Command
-   */
-  //                                                                                   ___keep units the same__
-  //                                                                                  |                        |
-  //                                                                                  v                        v 
-  public Command liftToDistanceProfiled(double relativeDistanceTicks /*(distance * gear ratio * final gear circumference * 2048)*/){ //TODO:: get the gear ratio and convert this parameter to desired height to raise to
-    return startRun(()-> {
-      timer.restart(); //restart timer so motion profile starts at the beginning
-      initialLeftDistance = leftMotor.getPosition().getValueAsDouble() * 2048 /*convert rotations to ticks*/;
-      initialRightDistance = rightMotor.getPosition().getValueAsDouble() * 2048;
-    }, 
-    ()-> {
-      double currentTime = timer.get();
-      TrapezoidProfile.State currentLeftSetpoint = 
-      elevatorVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initialLeftDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0)); // remove the initalDistance from the desired final state of the profile to make the ticks absolute
-      TrapezoidProfile.State currentRightSetpoint = 
-      elevatorVoltageProfile.calculate(currentTime, new TrapezoidProfile.State(initialRightDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0));
-      TrapezoidProfile.State desiredStateLeft = 
-      elevatorVoltageProfile.calculate(currentTime + Constants.LiftConstants.Dt, new TrapezoidProfile.State(initialLeftDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0));
-      TrapezoidProfile.State desiredStateRight = 
-      elevatorVoltageProfile.calculate(currentTime + Constants.LiftConstants.Dt, new TrapezoidProfile.State(initialRightDistance, 0), new TrapezoidProfile.State(relativeDistanceTicks, 0));
-      setMotorStates(currentRightSetpoint, currentLeftSetpoint, desiredStateRight, desiredStateLeft);
-    }).until(()-> elevatorVoltageProfile.isFinished(0));
+  public Command runToRotations(double rotations) {
+    MotionMagicVoltage request = new MotionMagicVoltage(rotations);
+    return run(()-> rightMotor.setControl(request));
   }
-  /**
-   * this will kill every command running on the robot when it is executed. use with caution bc I dont know what will happen
-   * @return
-   */
 
 public Command scrimageSetup(double speed) {
   return runOnce(()-> {
