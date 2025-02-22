@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 
 import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
@@ -23,6 +24,10 @@ public class Constants {
         public static final double ARM_MAX_VELOCITY = 0.5;
         public static final double ARM_MAX_ACCELERATION = 0.5;
         public static final double Dt = 0.1;
+        public static final MotionMagicConfigs ARM_MOTION_CONFIGS = new MotionMagicConfigs()
+            .withMotionMagicCruiseVelocity(10) // target velocity
+            .withMotionMagicAcceleration(5) // max acceleration
+            .withMotionMagicJerk(2); //how fast to change acceleration
     }
     public class VisionConstants {
         public static final String LIMELIGHT_NAME = "limelight"; //TODO: set the limelight name

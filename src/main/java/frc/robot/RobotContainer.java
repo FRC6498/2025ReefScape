@@ -120,10 +120,9 @@ public class RobotContainer {
 
 
             
-        operatorController.x().whileTrue(intakeCoral()).whileFalse(stopIntakeCoral());
-        operatorController.y().whileTrue(ejectIntake()).whileFalse(stopIntakeCoral());
-        operatorController.a().whileTrue(scrimageArmForward()).whileFalse(stopArm());
-        operatorController.b().whileTrue(scrimageArmBackward()).whileFalse(stopArm());
+        operatorController.x().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
+        operatorController.y().whileTrue(intakeSub.ejectIntake()).whileFalse(intakeSub.stopIntake());
+        operatorController.a().onTrue(armSub.runToRotationsMagic(5));
         operatorController.leftBumper().whileTrue(scrimageSetupFast()).whileFalse(liftStop().andThen(liftHold()));
         operatorController.rightBumper().whileTrue(scrimageSetupDown()).whileFalse(liftStop());
         
@@ -154,7 +153,7 @@ public Command liftStop() {
   return (liftSub.liftStop());
 }
     public Command testArm() {
-        return (armSub.runToAngleProfiled(Degrees.of(10)));
+        return armSub.runToRotationsMagic(15);
     }
 
     public Command reverseArmSysidDynamic() {
