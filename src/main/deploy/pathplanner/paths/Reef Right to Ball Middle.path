@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8525,
-        "y": 5.8385
+        "x": 5.407401315789473,
+        "y": 2.6298519736842105
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8661644506838027,
-        "y": 5.500121128043413
+        "x": 5.340049342105263,
+        "y": 2.331578947368421
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.63675,
-        "y": 5.507000000000001
+        "x": 3.511924342105263,
+        "y": 2.254605263157895
       },
       "prevControl": {
-        "x": 2.4040358609102443,
-        "y": 5.1993376369386155
+        "x": 4.304975404011087,
+        "y": 1.6454500996650174
+      },
+      "nextControl": {
+        "x": 2.848026315789473,
+        "y": 2.764555921052631
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.7800164473684208,
+        "y": 4.025
+      },
+      "prevControl": {
+        "x": 2.0398026315789473,
+        "y": 3.8229440789473688
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +58,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.237280465761074
+    "rotation": 177.66269414087617
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Reef To Ball Middle",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -178.854237161825
+    "rotation": 119.35775354279123
   },
   "useDefaultConstraints": true
 }

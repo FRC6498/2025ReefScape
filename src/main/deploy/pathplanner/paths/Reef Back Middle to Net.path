@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.564241803278687,
-        "y": 5.097899590163935
+        "x": 6.138651315789473,
+        "y": 4.034621710526316
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.564241803278676,
-        "y": 5.097899590163935
+        "x": 6.648601973684211,
+        "y": 3.197532894736842
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.677151639344262,
-        "y": 2.6643954918032797
+        "x": 5.984703947368421,
+        "y": 0.5611842105263156
       },
       "prevControl": {
-        "x": 7.104778463291645,
-        "y": 3.0920223157506617
-      },
-      "nextControl": {
-        "x": 6.500374944047626,
-        "y": 2.4876187965066427
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.38247950819672,
-        "y": 2.8801741803278698
-      },
-      "prevControl": {
-        "x": 6.149692622950819,
-        "y": 2.8681864754098365
+        "x": 6.034179035246738,
+        "y": 1.0468841195432943
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 121.21840276434635
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Back Reef to Net",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -179.27477570094078
   },
   "useDefaultConstraints": true
 }

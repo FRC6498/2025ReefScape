@@ -2,7 +2,16 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "Back Reef to Net",
+    "Field Middle to Reef Left",
+    "Field Middle to Reef Middle",
+    "Field Middle to Reef Right",
+    "Reef Front to Net",
+    "Reef To Ball Middle",
+    "Reef to Ball Left",
+    "Reef to Ball Right"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
