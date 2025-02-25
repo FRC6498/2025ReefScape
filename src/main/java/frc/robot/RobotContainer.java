@@ -96,10 +96,10 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driveController.back().and(driveController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driveController.back().and(driveController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -111,10 +111,16 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
         operatorController.a().onTrue(armSub.runToRotationsMagic(17)).whileFalse((stopArm()));
         operatorController.b().onTrue(armSub.runToRotationsMagic(0)).whileFalse((stopArm()));
-        operatorController.leftBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-                .until(armSub.canRaise())).whileFalse(liftStop().andThen(liftHold()));
-        operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-                .until(armSub.canRaise())).whileFalse(liftStop());
+        // operatorController.leftBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+        //         .until(armSub.canRaise())).whileFalse(liftStop().andThen(liftHold()));
+        // operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+        //         .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.5))).whileFalse(liftStop());
+
+        // lift sysid
+        operatorController.leftBumper().whileTrue(liftSub.liftSysidQuasistatic(SysIdRoutine.Direction.kForward));
+        operatorController.leftTrigger().whileTrue(liftSub.liftSysidQuasistatic(SysIdRoutine.Direction.kReverse));
+        operatorController.rightBumper().whileTrue(liftSub.liftSysidDynamic(SysIdRoutine.Direction.kForward));
+        operatorController.rightTrigger().whileTrue(liftSub.liftSysidDynamic(SysIdRoutine.Direction.kReverse));
 
     }
 

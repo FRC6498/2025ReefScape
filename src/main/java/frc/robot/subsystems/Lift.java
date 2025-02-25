@@ -69,8 +69,8 @@ public class Lift extends SubsystemBase {
         new SysIdRoutine.Mechanism(
             voltage -> {
               // set the voltage of the two motors
-              leftMotor.setVoltage(voltage.magnitude());
-              rightMotor.setVoltage(voltage.magnitude());
+              leftMotor.setVoltage(voltage.magnitude()/4);
+              rightMotor.setVoltage(voltage.magnitude()/4);
             }, log -> {
               // see the elevator identification section of the wpi docs for an explanation of
               // why these parameters need to be logged
