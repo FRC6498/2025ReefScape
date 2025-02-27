@@ -14,11 +14,13 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
@@ -49,7 +51,7 @@ public class Arm extends SubsystemBase {
     armMotorVelo = RadiansPerSecond.mutable(0);
     armMotorAccel = RadiansPerSecondPerSecond.mutable(0);
 
-    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Rotations.of(18))
+    armMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs().withForwardSoftLimitThreshold(Rotations.of(21))
         .withReverseSoftLimitThreshold(Rotations.of(-.2)).withForwardSoftLimitEnable(true)
         .withReverseSoftLimitEnable(true));
     armMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -90,7 +92,7 @@ public class Arm extends SubsystemBase {
     return run(() -> 
     armMotor.setControl(
       request.withPosition(setpointRotations)
-        .withFeedForward(armFeedForward.calculate(setpointRotations*2*Math.PI, 0))
+        .withFeedForward(armFeedForward.calculate((setpointRotations - 12.6)*2*Math.PI, 0))
       )
     );
   }
@@ -100,7 +102,8 @@ public class Arm extends SubsystemBase {
   }
 
   public Command stopArm() {
-    return runOnce(() -> armMotor.setVoltage(0));
+
+    return runOnce(() -> {armMotor.set(0); runToRotationsMagic(armPosition());});
   }
 
   public BooleanSupplier canRaise() {
@@ -111,11 +114,16 @@ public class Arm extends SubsystemBase {
     return armMotor.getPosition().getValueAsDouble();
   }
 
+  public double getRealArmRotation(){
+    return (armPosition()- 12.6)/46.69;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("mmmmmmm", getMotionMagic());
     SmartDashboard.putNumber("Arm Postiion", armPosition());
+    SmartDashboard.putNumber("realarmpos", getRealArmRotation()*360);
 
   }
 }

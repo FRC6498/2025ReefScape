@@ -48,6 +48,8 @@ public class RobotContainer {
         intakeSub = new Intake();
         liftSub = new Lift();
         armSub = new Arm();
+
+        // armSub.setDefaultCommand();
         configureBindings();
     }
 
