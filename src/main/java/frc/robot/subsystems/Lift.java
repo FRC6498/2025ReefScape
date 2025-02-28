@@ -9,9 +9,12 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
@@ -20,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.Constants.LiftConstants;
 
 public class Lift extends SubsystemBase {
@@ -48,8 +52,14 @@ public class Lift extends SubsystemBase {
     leftMotor.setControl(new Follower(LiftConstants.RIGHT_LIFT_MOTOR_ID, false));
 
     // Configure Motors (should not affect sysid)
-    rightMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
-    leftMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0 = Constants.LiftConstants.LIFT_MOTOR_CONFIG;
+    config.MotionMagic = Constants.LiftConstants.LIFT_MOTION_CONFIGS;
+    rightMotor.getConfigurator().apply(config);
+    rightMotor.setNeutralMode(NeutralModeValue.Brake);
+    leftMotor.getConfigurator().apply(config);
+    leftMotor.setNeutralMode(NeutralModeValue.Brake);
+
 
     // configure Sysid
     // NOTE::
@@ -106,8 +116,12 @@ public class Lift extends SubsystemBase {
   }
 
   public Command runToRotations(double rotations) {
-    MotionMagicVoltage request = new MotionMagicVoltage(rotations);
-    return run(() -> rightMotor.setControl(request));
+    MotionMagicVoltage requestRight = new MotionMagicVoltage(rightMotor.getPosition().getValueAsDouble());
+    MotionMagicVoltage requestLeft = new MotionMagicVoltage(leftMotor.getPosition().getValueAsDouble());
+    return runOnce(() -> {
+      rightMotor.setControl(requestRight.withPosition(rotations));
+      leftMotor.setControl(requestLeft.withPosition(rotations));
+    });
   }
 
   public Command scrimageSetup(double speed) {
