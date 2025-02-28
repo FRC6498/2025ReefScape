@@ -19,6 +19,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.MutAngle;
@@ -89,10 +90,12 @@ public class Arm extends SubsystemBase {
 
   public Command runToRotationsMagic(double setpointRotations) {
     MotionMagicVoltage request = new MotionMagicVoltage(armMotor.getPosition().getValueAsDouble());
+    double ff = armFeedForward.calculate((setpointRotations/46.69 - 12.6)*2*Math.PI, 0);
+    SmartDashboard.putNumber("ff", ff);
     return run(() -> 
     armMotor.setControl(
       request.withPosition(setpointRotations)
-        .withFeedForward(armFeedForward.calculate((setpointRotations - 12.6)*2*Math.PI, 0))
+        .withFeedForward(ff)
       )
     );
   }
@@ -103,7 +106,7 @@ public class Arm extends SubsystemBase {
 
   public Command stopArm() {
 
-    return runOnce(() -> {armMotor.set(0); runToRotationsMagic(armPosition());});
+    return runOnce(() -> armMotor.set(0));
   }
 
   public BooleanSupplier canRaise() {
@@ -124,6 +127,11 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("mmmmmmm", getMotionMagic());
     SmartDashboard.putNumber("Arm Postiion", armPosition());
     SmartDashboard.putNumber("realarmpos", getRealArmRotation()*360);
+
+    SmartDashboard.putNumber("V", armMotor.getMotorVoltage().getValueAsDouble());
+
+    double ff = armFeedForward.calculate((armPosition()/46.69 - 12.6)*2*Math.PI, 0);
+    SmartDashboard.putNumber("ff", ff);
 
   }
 }
