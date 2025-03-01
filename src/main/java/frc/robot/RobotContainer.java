@@ -121,7 +121,8 @@ public class RobotContainer {
 
         operatorController.povDown().onTrue(lift(0));
         operatorController.povLeft().onTrue(lift(7));
-        operatorController.povRight().onTrue(lift(17));
+        operatorController.povRight().onTrue(lift(
+            17));
         operatorController.povUp().onTrue(lift(30));
 
     }
