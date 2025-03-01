@@ -59,6 +59,10 @@ public class Arm extends SubsystemBase {
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0 = Constants.ArmConstants.ARM_MOTOR_CONFIG;
+    // config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 20;
+    // config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    // config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
     config.MotionMagic = Constants.ArmConstants.ARM_MOTION_CONFIGS;
     armMotor.getConfigurator().apply(config);
     armMotor.setNeutralMode(NeutralModeValue.Brake);

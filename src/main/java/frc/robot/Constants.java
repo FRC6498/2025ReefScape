@@ -34,16 +34,16 @@ public class Constants {
         //find all of these using sysid
         public static final Slot0Configs LIFT_MOTOR_CONFIG = new Slot0Configs() //TODO: run sysid on all the lift motors
         .withKA(.0098891)//Feedforward gains
-        .withKG(.44469)
+        .withKG(.47469)
         .withKS(.036355)
         .withKV(.12215)
         .withKP(.1358)//PID 
         .withKI(0)
-        .withKD(0);
+        .withKD(.1);
         public static final MotionMagicConfigs LIFT_MOTION_CONFIGS = new MotionMagicConfigs()
-            .withMotionMagicAcceleration(120)
-            .withMotionMagicCruiseVelocity(15)
-            .withMotionMagicJerk(1000);      
+            .withMotionMagicAcceleration(100)
+            .withMotionMagicCruiseVelocity(100)
+            .withMotionMagicJerk(500);      
     }
     public static final class RobotConstants{
         public static RobotConfig config;

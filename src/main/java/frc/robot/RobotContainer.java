@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -113,11 +115,21 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
         operatorController.a().onTrue(armSub.runToRotationsMagic(17));//.whileFalse((stopArm()));
         operatorController.b().onTrue(armSub.runToRotationsMagic(0));//.whileFalse((stopArm()));
-        operatorController.leftBumper().onTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-                .until(armSub.canRaise()).andThen(liftSub.runToRotations(7))).whileFalse(liftStop());
+        operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
         operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-                .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.05))).whileFalse(liftStop());
+            .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftStop());
 
+        operatorController.povDown().onTrue(lift(0));
+        operatorController.povLeft().onTrue(lift(7));
+        operatorController.povRight().onTrue(lift(17));
+        operatorController.povUp().onTrue(lift(30));
+
+    }
+        
+    public Command lift(double rotations){
+
+        return armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+        .until(armSub.canRaise()).andThen(liftSub.runToRotations(rotations));
     }
 
     public Command liftHold() {

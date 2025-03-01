@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -19,11 +21,13 @@ import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.LiftConstants;
 
 public class Lift extends SubsystemBase {
@@ -44,6 +48,7 @@ public class Lift extends SubsystemBase {
 
   public Lift() {
     // configure motors
+
     leftMotor = new TalonFX(LiftConstants.LEFT_LIFT_MOTOR_ID);
     rightMotor = new TalonFX(LiftConstants.RIGHT_LIFT_MOTOR_ID);
     rightMotor.get();
@@ -124,6 +129,21 @@ public class Lift extends SubsystemBase {
     });
   }
 
+  public Command runToRotations(DoubleSupplier rotations) {
+    return runToRotations(rotations.getAsDouble());
+  }
+
+  public Command zeroLift(){
+    return runOnce(()->{
+      rightMotor.setPosition(0);
+      leftMotor.setPosition(0);
+    });
+  }
+
+  public double getRotations(){
+    return leftMotor.getPosition().getValueAsDouble();
+  }
+
   public Command scrimageSetup(double speed) {
     return runOnce(() -> {
       leftMotor.set(speed);
@@ -156,5 +176,7 @@ public class Lift extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("lift rotations", getRotations());
+    SmartDashboard.putNumber("delta rot", getRotations() - rightMotor.getPosition().getValueAsDouble());
   }
 }
