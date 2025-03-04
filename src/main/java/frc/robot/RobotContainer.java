@@ -122,8 +122,11 @@ public class RobotContainer {
         operatorController.povDown().onTrue(lift(0));
         operatorController.povLeft().onTrue(lift(7));
         operatorController.povRight().onTrue(lift(
-            17));
+            18));
         operatorController.povUp().onTrue(lift(30));
+        operatorController.leftBumper().onTrue(lift(14));
+        // operatorController.povUpRight().onTrue();
+        operatorController.rightTrigger().onTrue(lift(33.8).andThen(armSub.runToRotationsMagic(15)));
 
     }
         
