@@ -110,24 +110,24 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        operatorController.x().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
-        operatorController.y().whileTrue(intakeSub.ejectIntake()).whileFalse(intakeSub.stopIntake());
+        operatorController.leftBumper().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
+        operatorController.rightBumper().whileTrue(intakeSub.ejectIntake()).whileFalse(intakeSub.stopIntake());
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
         operatorController.a().onTrue(armSub.runToRotationsMagic(17));//.whileFalse((stopArm()));
         operatorController.b().onTrue(armSub.runToRotationsMagic(0));//.whileFalse((stopArm()));
         // operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
-        operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-            .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftStop());
+       // operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+            //.until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftStop());
 
-        operatorController.start().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
+        operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
 
         operatorController.povDown().onTrue(lift(0));
         operatorController.povLeft().onTrue(lift(7));
         operatorController.povRight().onTrue(lift(
             16));
         operatorController.povUp().onTrue(lift(30));
-        operatorController.leftBumper().onTrue(lift(14));
-        operatorController.rightTrigger().onTrue(lift(33.8).andThen(armSub.runToRotationsMagic(15)));
+        operatorController.x().onTrue(lift(14));
+        operatorController.y().onTrue(lift(33.8).andThen(armSub.runToRotationsMagic(15)));
 
     }
         
