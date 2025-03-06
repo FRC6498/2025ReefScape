@@ -15,7 +15,7 @@ public class Constants {
         public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() 
         .withKA(0.0028603)//Feedforward gains
-        .withKG(-0.20141)
+        .withKG(-0.21041)
         .withKS(0.20093)
         .withKV(0.1069)
         .withKP(0.010679)//PID 

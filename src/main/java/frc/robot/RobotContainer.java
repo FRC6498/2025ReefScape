@@ -115,9 +115,9 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
         operatorController.a().onTrue(armSub.runToRotationsMagic(17));//.whileFalse((stopArm()));
         operatorController.b().onTrue(armSub.runToRotationsMagic(0));//.whileFalse((stopArm()));
-        // operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
-       // operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-            //.until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftStop());
+        operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
+        operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+            .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftStop());
 
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
 
@@ -126,8 +126,8 @@ public class RobotContainer {
         operatorController.povRight().onTrue(lift(
             16));
         operatorController.povUp().onTrue(lift(30));
-        operatorController.x().onTrue(lift(14));
-        operatorController.y().onTrue(lift(33.8).andThen(armSub.runToRotationsMagic(15)));
+        // operatorController.x().onTrue(lift(15));
+        operatorController.y().onTrue(lift(33.8).andThen(armSub.runToRotationsMagic(14)));
 
     }
         

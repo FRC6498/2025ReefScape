@@ -176,7 +176,8 @@ public class Lift extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("lift rotations", getRotations());
-    SmartDashboard.putNumber("delta rot", getRotations() - rightMotor.getPosition().getValueAsDouble());
+    
+    SmartDashboard.putNumber("lift rotations left", getRotations());
+    SmartDashboard.putNumber("lift rotations right", rightMotor.getPosition().getValueAsDouble());
   }
 }
