@@ -38,6 +38,12 @@ public class Intake extends SubsystemBase {
    public Command ejectIntake(){
     return this.run(()-> {intakeMotor.set(Constants.IntakeConstants.INTAKE_DEFAULT_SPEED);});
    }
+
+
+   public Command ejectAlgae(){
+    return this.run(()-> {intakeMotor.set(Constants.IntakeConstants.INTAKE_ALGAE_SPEED);});
+   }
+
   public Command runIntake(){
     return this.run(()-> {intakeMotor.set(Constants.IntakeConstants.INTAKE_DEFAULT_SPEED);})
                .until(intakeStop())

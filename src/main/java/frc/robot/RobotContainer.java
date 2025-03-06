@@ -100,10 +100,10 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driveController.back().and(driveController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driveController.back().and(driveController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -115,17 +115,18 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
         operatorController.a().onTrue(armSub.runToRotationsMagic(17));//.whileFalse((stopArm()));
         operatorController.b().onTrue(armSub.runToRotationsMagic(0));//.whileFalse((stopArm()));
-        operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
+        // operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
         operatorController.rightBumper().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
             .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftStop());
+
+        operatorController.start().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
 
         operatorController.povDown().onTrue(lift(0));
         operatorController.povLeft().onTrue(lift(7));
         operatorController.povRight().onTrue(lift(
-            18));
+            16));
         operatorController.povUp().onTrue(lift(30));
         operatorController.leftBumper().onTrue(lift(14));
-        // operatorController.povUpRight().onTrue();
         operatorController.rightTrigger().onTrue(lift(33.8).andThen(armSub.runToRotationsMagic(15)));
 
     }
