@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,8 +51,8 @@ public class RobotContainer {
         intakeSub = new Intake();
         liftSub = new Lift();
         armSub = new Arm();
-
-        // armSub.setDefaultCommand();
+        NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
+        NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
         configureBindings();
     }
 

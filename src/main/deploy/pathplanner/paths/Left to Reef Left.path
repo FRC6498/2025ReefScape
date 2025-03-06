@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.564241803278687,
-        "y": 5.097899590163935
+        "x": 7.783963815789473,
+        "y": 7.277138157894736
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.564241803278676,
-        "y": 5.097899590163935
+        "x": 6.902511256259861,
+        "y": 6.848858640041419
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.677151639344262,
-        "y": 2.6643954918032797
+        "x": 5.465131578947368,
+        "y": 5.429769736842105
       },
       "prevControl": {
-        "x": 7.104778463291645,
-        "y": 3.0920223157506617
-      },
-      "nextControl": {
-        "x": 6.500374944047626,
-        "y": 2.4876187965066427
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.38247950819672,
-        "y": 2.8801741803278698
-      },
-      "prevControl": {
-        "x": 6.149692622950819,
-        "y": 2.8681864754098365
+        "x": 5.7532337141716186,
+        "y": 5.851332375284826
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 121.21840276434635
+    "rotation": -119.60445074600493
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Field Middle to Reef Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -178.15238973400554
   },
   "useDefaultConstraints": true
 }
