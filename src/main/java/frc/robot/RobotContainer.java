@@ -11,10 +11,13 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,12 +50,18 @@ public class RobotContainer {
     private final Arm armSub;
     private final Lift liftSub;
 
+    private final SendableChooser<Command> chooser;
+
     public RobotContainer() {
         intakeSub = new Intake();
         liftSub = new Lift();
         armSub = new Arm();
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
+
+        chooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("autoChooser", chooser);
+
         configureBindings();
     }
 
@@ -170,6 +179,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return chooser.getSelected();
     }
 }

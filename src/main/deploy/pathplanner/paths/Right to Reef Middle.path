@@ -48,7 +48,7 @@
   "folder": "Field Middle to Reef Middle",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -178.6196459265556
+    "rotation": -178.61964592655562
   },
   "useDefaultConstraints": true
 }
