@@ -125,8 +125,10 @@ public class RobotContainer {
         operatorController.rightBumper().whileTrue(intakeSub.ejectIntake()).whileFalse(intakeSub.stopIntake());
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
         operatorController.a().onTrue(armSub.runToRotationsMagic(17));//.whileFalse((stopArm()));
-        operatorController.b().onTrue(armSub.runToRotationsMagic(0));//.whileFalse((stopArm()));
-        operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
+        // stops arms so motion magic always returns to zero
+        operatorController.b().onTrue(armSub.stopArm().andThen(armSub.runToRotationsMagic(0)));//.whileFalse((stopArm()));
+        // operatorController.start().onTrue(liftSub.zeroLift());//.whileFalse(liftStop());
+        operatorController.start().onTrue(armSub.runToRotationsMagic(21));
         operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
             .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftStop());
 
@@ -180,7 +182,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return AutoBuilder.buildAuto("test");
+        return chooser.getSelected();
     }
 
     public void autonomousInit(){
