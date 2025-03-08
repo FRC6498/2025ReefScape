@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -63,6 +64,10 @@ public class Lift extends SubsystemBase {
     rightMotor.getConfigurator().apply(config);
     rightMotor.setNeutralMode(NeutralModeValue.Brake);
     leftMotor.getConfigurator().apply(config);
+    CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs().withStatorCurrentLimit(40);
+    leftMotor.getConfigurator().apply(config);
+    rightMotor.getConfigurator().apply(config);
+
     leftMotor.setNeutralMode(NeutralModeValue.Brake);
 
 
