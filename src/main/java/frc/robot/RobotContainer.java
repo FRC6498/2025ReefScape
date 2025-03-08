@@ -59,6 +59,7 @@ public class RobotContainer {
         armSub = new Arm();
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
+        NamedCommands.registerCommand("ejectIntake", intakeSub.stopIntake());
 
         chooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("autoChooser", chooser);

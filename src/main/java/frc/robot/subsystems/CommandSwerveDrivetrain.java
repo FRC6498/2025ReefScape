@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -24,6 +25,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -130,23 +132,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
-         SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
+        SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-        try{
-            Constants.RobotConstants.config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        AutoBuilder.configure(
-            this::getRobotPose, 
-            this::resetPose, 
-            this::getRobotRelativeSpeeds,
-            (speeds)-> applyRequest(()-> drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), 
-            new PPHolonomicDriveController(
-                new PIDConstants(modules[0].DriveMotorGains.kP, modules[0].DriveMotorGains.kI, modules[0].DriveMotorGains.kD),
-                new PIDConstants(modules[0].SteerMotorGains.kP, modules[0].SteerMotorGains.kI,modules[0].SteerMotorGains.kD)), 
-            Constants.RobotConstants.config, ()-> {return false;}, this);
+        configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -174,20 +163,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-        try{
-            Constants.RobotConstants.config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        AutoBuilder.configure(
-            this::getRobotPose, 
-            this::resetPose, 
-            this::getRobotRelativeSpeeds,
-            (speeds)-> applyRequest(()-> drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), 
-            new PPHolonomicDriveController(
-                new PIDConstants(modules[0].DriveMotorGains.kP, modules[0].DriveMotorGains.kI, modules[0].DriveMotorGains.kD),
-                new PIDConstants(modules[0].SteerMotorGains.kP, modules[0].SteerMotorGains.kI,modules[0].SteerMotorGains.kD)), 
-            Constants.RobotConstants.config, ()-> {return false;}, this);
+        configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -223,20 +199,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-        try{
-            Constants.RobotConstants.config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        AutoBuilder.configure(
-            this::getRobotPose, 
-            this::resetPose, 
-            this::getRobotRelativeSpeeds,
-            (speeds)-> applyRequest(()-> drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), 
-            new PPHolonomicDriveController(
-                new PIDConstants(modules[0].DriveMotorGains.kP, modules[0].DriveMotorGains.kI, modules[0].DriveMotorGains.kD),
-                new PIDConstants(modules[0].SteerMotorGains.kP, modules[0].SteerMotorGains.kI,modules[0].SteerMotorGains.kD)), 
-            Constants.RobotConstants.config, ()-> {return false;}, this);
+        configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -309,7 +272,35 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
-
+    SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+    public void driveChasisSpeeds(ChassisSpeeds speeds) {
+        applyRequest(()-> autoRequest.withSpeeds(speeds));
+    }
+    private void configureAutoBuilder() {
+        try {
+            var config = RobotConfig.fromGUISettings();
+            AutoBuilder.configure(
+                ()-> getState().Pose, 
+                this::resetPose, 
+                ()-> getState().Speeds,
+                (speeds, feeds) -> setControl(
+                    autoRequest
+                    .withSpeeds(speeds)
+                    .withWheelForceFeedforwardsX(feeds.robotRelativeForcesXNewtons())
+                    .withWheelForceFeedforwardsY(feeds.robotRelativeForcesYNewtons())
+                ),
+                 new PPHolonomicDriveController(
+                    new PIDConstants(5), 
+                    new PIDConstants(5)
+                ), 
+                config, 
+                ()-> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red, 
+                this
+                );
+        } catch (Exception e) {
+            DriverStation.reportError("Failed to load Pathplanner", e.getStackTrace());
+        }
+    }
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
      * while still accounting for measurement noise.
@@ -321,13 +312,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
     }
-    public Pose2d getRobotPose() {
-        return this.getState().Pose;
-    }
-    public ChassisSpeeds getRobotRelativeSpeeds() {
-        return this.getState().Speeds;
-    }
-
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
      * while still accounting for measurement noise.
