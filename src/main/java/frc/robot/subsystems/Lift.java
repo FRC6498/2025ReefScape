@@ -9,17 +9,24 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularAcceleration;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.Constants.LiftConstants;
 
 public class Lift extends SubsystemBase {
@@ -42,15 +49,23 @@ public class Lift extends SubsystemBase {
     // configure motors
     leftMotor = new TalonFX(LiftConstants.LEFT_LIFT_MOTOR_ID);
     rightMotor = new TalonFX(LiftConstants.RIGHT_LIFT_MOTOR_ID);
-    rightMotor.get();
-    leftMotor.get();
-    // slave the left side to the right side to prevent them getting out of sync
-    leftMotor.setControl(new Follower(LiftConstants.RIGHT_LIFT_MOTOR_ID, false));
 
     // Configure Motors (should not affect sysid)
-    rightMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
-    leftMotor.getConfigurator().apply(LiftConstants.LIFT_MOTOR_CONFIG);
+    TalonFXConfiguration config = new TalonFXConfiguration()
+      .withSlot0(Constants.LiftConstants.LIFT_MOTOR_CONFIG)
+      .withMotionMagic(Constants.LiftConstants.LIFT_MOTION_CONFIGS);
+    CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs().withStatorCurrentLimit(40);
+    rightMotor.getConfigurator().apply(config);
+    rightMotor.getConfigurator().apply(currentConfig);
+    rightMotor.setNeutralMode(NeutralModeValue.Brake);
+    
+    leftMotor.getConfigurator().apply(config);
+    leftMotor.getConfigurator().apply(currentConfig);
+    leftMotor.setNeutralMode(NeutralModeValue.Brake);
 
+    // slave the left side to the right side to stop them from fighting each other
+    leftMotor.setControl(new Follower(LiftConstants.RIGHT_LIFT_MOTOR_ID, false));
+    
     // configure Sysid
     // NOTE::
     // anything with variable -> {*some other stuff*}
@@ -96,7 +111,7 @@ public class Lift extends SubsystemBase {
 
   /**
    * Quasistatic Sysid test for the lift - will run the motors at an increasing
-   * voltage up to 7v at a 0.5V step
+   * voltage up to 7v at a 1V step
    * 
    * @param direction
    * @return
@@ -106,8 +121,27 @@ public class Lift extends SubsystemBase {
   }
 
   public Command runToRotations(double rotations) {
-    MotionMagicVoltage request = new MotionMagicVoltage(rotations);
-    return run(() -> rightMotor.setControl(request));
+    MotionMagicVoltage requestRight = new MotionMagicVoltage(rightMotor.getPosition().getValueAsDouble());
+    MotionMagicVoltage requestLeft = new MotionMagicVoltage(leftMotor.getPosition().getValueAsDouble());
+    return runOnce(() -> {
+      rightMotor.setControl(requestRight.withPosition(rotations));
+      leftMotor.setControl(requestLeft.withPosition(rotations));
+    });
+  }
+
+  public Command runToRotations(DoubleSupplier rotations) {
+    return runToRotations(rotations.getAsDouble());
+  }
+
+  public Command zeroLift(){
+    return runOnce(()->{
+      rightMotor.setPosition(0);
+      leftMotor.setPosition(0);
+    });
+  }
+
+  public double getRotations(){
+    return leftMotor.getPosition().getValueAsDouble();
   }
 
   public Command scrimageSetup(double speed) {
@@ -124,23 +158,9 @@ public class Lift extends SubsystemBase {
     });
   }
 
-  public Command liftHold() {
-    return runOnce(() -> {
-      leftMotor.setVoltage(.5);
-      rightMotor.setVoltage(.5);
-    });
-  }
-
-  public Command hardStopAll_DANGER() {
-    return runOnce(() -> {
-      CommandScheduler.getInstance().cancelAll(); // this will
-      leftMotor.setVoltage(0);
-      rightMotor.setVoltage(0);
-    });
-  }
-
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("lift rotations left", getRotations());
+    SmartDashboard.putNumber("lift rotations right", rightMotor.getPosition().getValueAsDouble());
   }
 }
