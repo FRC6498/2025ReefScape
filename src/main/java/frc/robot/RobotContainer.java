@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lift;
@@ -40,6 +41,7 @@ public class RobotContainer {
     private final Intake intakeSub;
     private final Arm armSub;
     private final Lift liftSub;
+    private final Climber climberSub;
     private final Telemetry logger; 
     
     private final SendableChooser<Command> chooser;
@@ -49,11 +51,13 @@ public class RobotContainer {
         intakeSub = new Intake();
         liftSub = new Lift();
         armSub = new Arm();
+        climberSub = new Climber();
         logger = new Telemetry(MaxSpeed);
         // Pathplanner Commands
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
-        NamedCommands.registerCommand("ejectIntake", intakeSub.stopIntake());
+        NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake());
+        NamedCommands.registerCommand("Lift Position", liftSub.runToRotations(0));
 
         
         chooser = AutoBuilder.buildAutoChooser();

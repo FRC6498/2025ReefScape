@@ -81,10 +81,12 @@ public class Arm extends SubsystemBase {
     return armRoutine.dynamic(direction);
   }
 
-  public Command runToRotationsMagic(double setpointRotations) {
+  public Command 
+  runToRotationsMagic(double setpointRotations) {
     MotionMagicVoltage request = new MotionMagicVoltage(armMotor.getPosition().getValueAsDouble());
     // feedforward needs to convert from arm motor rotations to arm gearbox output position in radians rotated 90 degrees
     // math : (motor rotations / gear ratio) * (2 * PI) + (PI/2)
+    //double ff = armFeedForward.calculate(setpointRotations/46.69* (2* Math.PI) + (Math.PI/2), 0);
     double ff = armFeedForward.calculate((setpointRotations/46.69 - 12.6)*2*Math.PI, 0);
     SmartDashboard.putNumber("ff", ff);
     return run(() -> 

@@ -279,7 +279,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 ),
                  new PPHolonomicDriveController(
                     new PIDConstants(5), // random PID constants (need to be tuned)
-                    new PIDConstants(5)
+                    new PIDConstants(2)
                 ), 
                 config, 
                 ()-> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red /*flip the path if on Red Alliance*/, 
