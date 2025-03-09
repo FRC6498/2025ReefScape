@@ -24,11 +24,9 @@ import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.LiftConstants;
 
 public class Lift extends SubsystemBase {
@@ -49,28 +47,25 @@ public class Lift extends SubsystemBase {
 
   public Lift() {
     // configure motors
-
     leftMotor = new TalonFX(LiftConstants.LEFT_LIFT_MOTOR_ID);
     rightMotor = new TalonFX(LiftConstants.RIGHT_LIFT_MOTOR_ID);
-    rightMotor.get();
-    leftMotor.get();
-    // slave the left side to the right side to prevent them getting out of sync
-    leftMotor.setControl(new Follower(LiftConstants.RIGHT_LIFT_MOTOR_ID, false));
 
     // Configure Motors (should not affect sysid)
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    config.Slot0 = Constants.LiftConstants.LIFT_MOTOR_CONFIG;
-    config.MotionMagic = Constants.LiftConstants.LIFT_MOTION_CONFIGS;
-    rightMotor.getConfigurator().apply(config);
-    rightMotor.setNeutralMode(NeutralModeValue.Brake);
-    leftMotor.getConfigurator().apply(config);
+    TalonFXConfiguration config = new TalonFXConfiguration()
+      .withSlot0(Constants.LiftConstants.LIFT_MOTOR_CONFIG)
+      .withMotionMagic(Constants.LiftConstants.LIFT_MOTION_CONFIGS);
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs().withStatorCurrentLimit(40);
-    leftMotor.getConfigurator().apply(config);
     rightMotor.getConfigurator().apply(config);
-
+    rightMotor.getConfigurator().apply(currentConfig);
+    rightMotor.setNeutralMode(NeutralModeValue.Brake);
+    
+    leftMotor.getConfigurator().apply(config);
+    leftMotor.getConfigurator().apply(currentConfig);
     leftMotor.setNeutralMode(NeutralModeValue.Brake);
 
-
+    // slave the left side to the right side to stop them from fighting each other
+    leftMotor.setControl(new Follower(LiftConstants.RIGHT_LIFT_MOTOR_ID, false));
+    
     // configure Sysid
     // NOTE::
     // anything with variable -> {*some other stuff*}
@@ -116,7 +111,7 @@ public class Lift extends SubsystemBase {
 
   /**
    * Quasistatic Sysid test for the lift - will run the motors at an increasing
-   * voltage up to 7v at a 0.5V step
+   * voltage up to 7v at a 1V step
    * 
    * @param direction
    * @return
@@ -163,25 +158,8 @@ public class Lift extends SubsystemBase {
     });
   }
 
-  public Command liftHold() {
-    return runOnce(() -> {
-      leftMotor.setVoltage(.5);
-      rightMotor.setVoltage(.5);
-    });
-  }
-
-  public Command hardStopAll_DANGER() {
-    return runOnce(() -> {
-      CommandScheduler.getInstance().cancelAll(); // this will
-      leftMotor.setVoltage(0);
-      rightMotor.setVoltage(0);
-    });
-  }
-
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    
     SmartDashboard.putNumber("lift rotations left", getRotations());
     SmartDashboard.putNumber("lift rotations right", rightMotor.getPosition().getValueAsDouble());
   }

@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -20,18 +19,15 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -132,9 +128,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
-        SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
-            .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
         configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -160,9 +153,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
-        SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
-            .withDeadband(5 * 0.1).withRotationalDeadband(3 * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
         configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -272,29 +262,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
-    SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
-    public void driveChasisSpeeds(ChassisSpeeds speeds) {
-        applyRequest(()-> autoRequest.withSpeeds(speeds));
-    }
     private void configureAutoBuilder() {
+        SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
         try {
-            var config = RobotConfig.fromGUISettings();
+            var config = RobotConfig.fromGUISettings(); // read config created from Pathplanner settings GUI
             AutoBuilder.configure(
-                ()-> getState().Pose, 
-                this::resetPose, 
-                ()-> getState().Speeds,
+                ()-> getState().Pose, // get robot pose
+                this::resetPose, // supply method to reset pose
+                ()-> getState().Speeds, // get current robot chasis speeds
                 (speeds, feeds) -> setControl(
+                    // applies robot relative chasis speeds and feedforwards
                     autoRequest
                     .withSpeeds(speeds)
                     .withWheelForceFeedforwardsX(feeds.robotRelativeForcesXNewtons())
                     .withWheelForceFeedforwardsY(feeds.robotRelativeForcesYNewtons())
                 ),
                  new PPHolonomicDriveController(
-                    new PIDConstants(5), 
+                    new PIDConstants(5), // random PID constants (need to be tuned)
                     new PIDConstants(5)
                 ), 
                 config, 
-                ()-> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red, 
+                ()-> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red /*flip the path if on Red Alliance*/, 
                 this
                 );
         } catch (Exception e) {
