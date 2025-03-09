@@ -22,8 +22,8 @@ public class Constants {
     public class ArmConstants {
         public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() 
-        .withKA(.0028603)//Feedforward gains
-        .withKG(-0.1775)
+        .withKA(0.0028603)//Feedforward gains
+        .withKG(-0.1475)
         .withKS(0.20093)
         .withKV(0.1069)
         .withKP(0.010679)//PID 
@@ -65,7 +65,12 @@ public class Constants {
                 DCMotor.getKrakenX60(1), 
                 Amps.of(60), 
                 4), 
-            new Translation2d[] { new Translation2d(), new Translation2d(),new Translation2d(),new Translation2d()}
+            new Translation2d[] { // module offsets 
+                new Translation2d(0,0), // x and y distances 
+                new Translation2d(0,0),
+                new Translation2d(0,0),
+                new Translation2d(0,0)
+            }
         );
 
     }

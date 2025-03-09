@@ -16,3 +16,11 @@ Things to find out about the robot
 5. exact Drive gear ratio 8.14
 6. Dimensions including bumpers 34 1/2 by 39
 All of these need to be added to the pathplanner settings
+
+AUTO FIXES
+1. Log the robot pose and compare that to where pathplanner thinks the robot is
+    a. if there is a difference then we need to get the camera working so the robot can detect where it is on the field
+2. Run sysid with the m_sysIdRoutineRotation routine in the drivetrain subsystem and use the pid numbers you get from that in the
+    second set of PID constants in the configurePathplanner method in the drivetrain
+
+I think 2 will fix the issue since pathplanner should reset the robot position when the path starts
