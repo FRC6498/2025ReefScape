@@ -21,6 +21,18 @@
           "data": {
             "name": "ejectIntake"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
+          }
         }
       ]
     }

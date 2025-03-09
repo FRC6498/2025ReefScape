@@ -1,8 +1,16 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 
 public class Constants {
     public class IntakeConstants {
@@ -15,7 +23,7 @@ public class Constants {
         public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() 
         .withKA(0.0028603)//Feedforward gains
-        .withKG(-0.21041)
+        .withKG(-0.1475)
         .withKS(0.20093)
         .withKV(0.1069)
         .withKP(0.010679)//PID 
@@ -47,7 +55,18 @@ public class Constants {
             .withMotionMagicJerk(500);      
     }
     public static final class RobotConstants{
-        public static RobotConfig config;
+        public static RobotConfig config = new RobotConfig(
+            40,
+            1,
+            new ModuleConfig(
+                Inches.of(2), 
+                MetersPerSecond.of(4), 
+                1, 
+                DCMotor.getKrakenX60(1), 
+                Amps.of(60), 
+                4), 
+            new Translation2d[] { new Translation2d(), new Translation2d(),new Translation2d(),new Translation2d()}
+        );
 
     }
 }
