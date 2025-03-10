@@ -130,21 +130,29 @@ public class RobotContainer {
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
         
         // Run lift to 0
-        operatorController.povDown().onTrue(liftSub.runToRotations(0));
+        operatorController.povDown().onTrue(safeLift(0));
         
         // Run lift to level 1
-        operatorController.povLeft().onTrue(liftSub.runToRotations(7));
+        operatorController.povLeft().onTrue(safeLift(7));
         
         // Run lift to level 2
-        operatorController.povRight().onTrue(liftSub.runToRotations(16));
+        operatorController.povRight().onTrue(safeLift(16));
         
         // Run lift to level 3
-        operatorController.povUp().onTrue(liftSub.runToRotations(30));
+        operatorController.povUp().onTrue(safeLift(30));
         
         // Eject algea to barge
         // Run lift to max and Rotate arm to Algea eject position
-        operatorController.y().onTrue(liftSub.runToRotations(33.8).andThen(armSub.runToRotationsMagic(14)));
+        operatorController.y().onTrue(safeLift(33.8).andThen(armSub.runToRotationsMagic(14)));
 
+    }
+
+    // makes sure arm is out of the way before moving lift
+    public Command safeLift(double rotations){
+        return armSub.runToRotationsMagic(5)
+                     .unless(armSub.canRaise())
+                     .until(armSub.canRaise())
+                     .andThen(liftSub.runToRotations(rotations));
     }
         
     public Command getAutonomousCommand() {
