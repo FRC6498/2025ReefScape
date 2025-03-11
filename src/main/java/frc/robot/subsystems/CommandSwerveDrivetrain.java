@@ -213,7 +213,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return Command to run
      */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.quasistatic(direction);
+        return m_sysIdRoutineRotation.quasistatic(direction);
     }
 
     /**
@@ -224,7 +224,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return Command to run
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.dynamic(direction);
+        return m_sysIdRoutineRotation.dynamic(direction);
     }
 
     @Override
@@ -279,7 +279,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 ),
                  new PPHolonomicDriveController(
                     new PIDConstants(5), // random PID constants (need to be tuned)
-                    new PIDConstants(2)
+                    new PIDConstants(5, 5, 5)
                 ), 
                 config, 
                 ()-> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red /*flip the path if on Red Alliance*/, 

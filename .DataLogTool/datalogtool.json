@@ -1,7 +1,5 @@
 {
   "download": {
-    "deleteAfter": false,
-    "localDir": "C:\\ArmRioLogs",
     "serverTeam": "6498"
   }
 }

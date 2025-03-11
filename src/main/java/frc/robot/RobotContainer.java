@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
@@ -99,7 +100,13 @@ public class RobotContainer {
                     new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX())
                 )
         ));
+        
+        operatorController.a().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        operatorController.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        operatorController.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        operatorController.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
+    
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         
@@ -109,22 +116,22 @@ public class RobotContainer {
         // Coral eject
         operatorController.rightBumper().whileTrue(intakeSub.ejectIntake()).whileFalse(intakeSub.stopIntake());
 
-        // Algae Intake
+        // Algae Intake`
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
 
         // Run arm to Algea Position
-        operatorController.a().onTrue(armSub.runToRotationsMagic(17));
+        //operatorController.a().onTrue(armSub.runToRotationsMagic(17));
 
         // Run arm to zero
         // stops arms so motion magic always returns to zero
-        operatorController.b().onTrue(armSub.stopArm().andThen(armSub.runToRotationsMagic(0)));
+        //operatorController.b().onTrue(armSub.stopArm().andThen(armSub.runToRotationsMagic(0)));
 
         // Run arm to Algea eject Position
         operatorController.start().onTrue(armSub.runToRotationsMagic(21));
         
         // 
-        operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-            .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
+        //operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+            //.until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
         
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
@@ -143,7 +150,7 @@ public class RobotContainer {
         
         // Eject algea to barge
         // Run lift to max and Rotate arm to Algea eject position
-        operatorController.y().onTrue(safeLift(33.8).andThen(armSub.runToRotationsMagic(14)));
+        //operatorController.y().onTrue(safeLift(33.8).andThen(armSub.runToRotationsMagic(14)));
 
     }
 
