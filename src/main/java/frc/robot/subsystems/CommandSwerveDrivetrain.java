@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Robot;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -271,7 +272,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 ()-> getState().Pose, // get robot pose
                 this::resetPose, // supply method to reset pose
                 ()-> getState().Speeds, // get current robot chasis speeds
-                (speeds, feeds) -> {speeds.omegaRadiansPerSecond *= -1;
+                (speeds, feeds) -> {
+                    
+                    int mult = Robot.isReal() ? -1 : 1;
+                    speeds.omegaRadiansPerSecond *= mult;
                 
                     setControl(
                     // applies robot relative chasis speeds and feedforwards
