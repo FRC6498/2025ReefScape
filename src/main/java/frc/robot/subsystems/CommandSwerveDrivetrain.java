@@ -271,13 +271,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 ()-> getState().Pose, // get robot pose
                 this::resetPose, // supply method to reset pose
                 ()-> getState().Speeds, // get current robot chasis speeds
-                (speeds, feeds) -> setControl(
+                (speeds, feeds) -> {speeds.omegaRadiansPerSecond *= -1;
+                
+                    setControl(
                     // applies robot relative chasis speeds and feedforwards
                     autoRequest
                     .withSpeeds(speeds)
                     .withWheelForceFeedforwardsX(feeds.robotRelativeForcesXNewtons())
                     .withWheelForceFeedforwardsY(feeds.robotRelativeForcesYNewtons())
-                ),
+                );},
                  new PPHolonomicDriveController(
                     new PIDConstants(1), // random PID constants (need to be tuned)
                     new PIDConstants(.01)
