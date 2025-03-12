@@ -58,7 +58,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
         NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake());
-        NamedCommands.registerCommand("Lift Position", liftSub.runToRotations(0));
+        NamedCommands.registerCommand("Lift Position Two", safeLift(7));
 
         
         chooser = AutoBuilder.buildAutoChooser();
@@ -73,8 +73,8 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() -> drive
-                .withVelocityX(-driveController.getLeftY() * MaxSpeed) 
-                .withVelocityY(-driveController.getLeftX() * MaxSpeed) 
+                .withVelocityX(driveController.getLeftY() * MaxSpeed) 
+                .withVelocityY(driveController.getLeftX() * MaxSpeed) 
                 .withRotationalRate(driveController.getRightX() * MaxAngularRate) 
             )
         );
@@ -101,10 +101,10 @@ public class RobotContainer {
                 )
         ));
         
-        operatorController.a().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        operatorController.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        operatorController.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        operatorController.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+       // operatorController.a().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+       // operatorController.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        //operatorController.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        //operatorController.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
     
         // reset the field-centric heading on left bumper press
@@ -120,18 +120,18 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
 
         // Run arm to Algea Position
-        //operatorController.a().onTrue(armSub.runToRotationsMagic(17));
+        operatorController.a().onTrue(armSub.runToRotationsMagic(17));
 
         // Run arm to zero
         // stops arms so motion magic always returns to zero
-        //operatorController.b().onTrue(armSub.stopArm().andThen(armSub.runToRotationsMagic(0)));
+        operatorController.b().onTrue(armSub.stopArm().andThen(armSub.runToRotationsMagic(0)));
 
         // Run arm to Algea eject Position
         operatorController.start().onTrue(armSub.runToRotationsMagic(21));
         
         // 
-        //operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-            //.until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
+        operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+            .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
         
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
@@ -150,7 +150,7 @@ public class RobotContainer {
         
         // Eject algea to barge
         // Run lift to max and Rotate arm to Algea eject position
-        //operatorController.y().onTrue(safeLift(33.8).andThen(armSub.runToRotationsMagic(14)));
+        operatorController.y().onTrue(safeLift(33.8).andThen(armSub.runToRotationsMagic(14)));
 
     }
 

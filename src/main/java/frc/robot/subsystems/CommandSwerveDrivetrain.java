@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -278,8 +279,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     .withWheelForceFeedforwardsY(feeds.robotRelativeForcesYNewtons())
                 ),
                  new PPHolonomicDriveController(
-                    new PIDConstants(5), // random PID constants (need to be tuned)
-                    new PIDConstants(5, 5, 5)
+                    new PIDConstants(1), // random PID constants (need to be tuned)
+                    new PIDConstants(.01)
                 ), 
                 config, 
                 ()-> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red /*flip the path if on Red Alliance*/, 
