@@ -11,7 +11,6 @@ import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import frc.robot.subsystems.Climber;
 
 public class Constants {
     public class IntakeConstants {

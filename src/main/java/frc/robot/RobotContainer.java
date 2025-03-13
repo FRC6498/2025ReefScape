@@ -10,12 +10,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
@@ -79,20 +77,7 @@ public class RobotContainer {
                 .withRotationalRate(driveController.getRightX() * MaxAngularRate) 
             )
         );
-        // driveController.x().whileTrue(
-        //     drivetrain.applyRequest(() -> drive
-        //         .withVelocityX(.5)
-        //         .withVelocityY(0)
-        //         .withRotationalRate(0)
-        //     )
-        // );
-        // driveController.y().whileTrue(
-        //     drivetrain.applyRequest(() -> drive
-        //         .withVelocityX(0)
-        //         .withVelocityY(0)
-        //         .withRotationalRate(.5)
-        //     )
-        // );
+
         driveController.a().whileTrue(
             drivetrain.applyRequest(() -> brake)
             );
@@ -101,12 +86,6 @@ public class RobotContainer {
                     new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX())
                 )
         ));
-        
-       // operatorController.a().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
-       // operatorController.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        //operatorController.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        //operatorController.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-
     
         // reset the field-centric heading on left bumper press
         driveController.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -134,10 +113,6 @@ public class RobotContainer {
         // Run arm to Algea eject Position
         operatorController.start().onTrue(armSub.runToRotationsMagic(21));
         
-        // 
-        //operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-            //.until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
-
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
         
