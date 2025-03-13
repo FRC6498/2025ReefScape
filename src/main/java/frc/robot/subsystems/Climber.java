@@ -14,10 +14,14 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.LinearActuator;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  private TalonFX climbMotor = new TalonFX(26);
+  private TalonFX climbMotor = new TalonFX(Constants.ActuatorConstants.CLIMB_MOTOR_ID);
+  private LinearActuator latchActuator = new LinearActuator(Constants.ActuatorConstants.ACTUATOR_PWM_PORT, 140);
+
   public Climber() {
 
     // todo get PID
@@ -43,6 +47,10 @@ public class Climber extends SubsystemBase {
 
   public Command stop(){
     return runOnce(()->climbMotor.stopMotor());
+  }
+
+  public Command unlatch(){
+    return runOnce(()->latchActuator.setLength(0));
   }
 
   @Override
