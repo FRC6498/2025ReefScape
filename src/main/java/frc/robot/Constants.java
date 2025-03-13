@@ -19,6 +19,10 @@ public class Constants {
         public static final double INTAKE_ALGAE_SPEED = -1;
         public static final int CANRANGE_SENSOR_ID = 25;
     }
+    public class ActuatorConstants {
+        public static final int CLIMB_MOTOR_ID = 26;
+        public static final int ACTUATOR_PWM_PORT = 0;
+    }
     public class ArmConstants {
         public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() 
