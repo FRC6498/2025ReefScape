@@ -4,8 +4,12 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,14 +24,25 @@ public class Climber extends SubsystemBase {
     // Slot0Configs slot0Config = new Slot0Configs();
     // climbMotor.getConfigurator()
 
+    climbMotor.setNeutralMode(NeutralModeValue.Brake);
+    climbMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs()
+        .withForwardSoftLimitThreshold(Rotations.of(380))
+        .withForwardSoftLimitEnable(true)
+        .withReverseSoftLimitEnable(false));
+
+    
   }
 
   public Command runForward(){
-    return runOnce(()->climbMotor.set(.1));
+    return run(()->climbMotor.setVoltage(3));
   }
 
   public Command runReverse(){
-    return runOnce(()->climbMotor.set(-.1));
+    return run(()->climbMotor.setVoltage(-3));
+  }
+
+  public Command stop(){
+    return runOnce(()->climbMotor.stopMotor());
   }
 
   @Override
