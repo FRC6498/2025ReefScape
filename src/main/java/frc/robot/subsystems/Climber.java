@@ -19,8 +19,8 @@ import frc.robot.LinearActuator;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  private TalonFX climbMotor = new TalonFX(Constants.ActuatorConstants.CLIMB_MOTOR_ID);
-  private LinearActuator latchActuator = new LinearActuator(Constants.ActuatorConstants.ACTUATOR_PWM_PORT, 140);
+  private TalonFX climbMotor = new TalonFX(Constants.ClimberConstants.CLIMB_MOTOR_ID);
+  private LinearActuator latchActuator = new LinearActuator(Constants.ClimberConstants.ACTUATOR_PWM_PORT, 140);
 
   public Climber() {
 
@@ -38,11 +38,11 @@ public class Climber extends SubsystemBase {
   }
 
   public Command runForward(){
-    return run(()->climbMotor.setVoltage(3));
+    return run(()->climbMotor.set(Constants.ClimberConstants.MOTOR_SPEED));
   }
 
   public Command runReverse(){
-    return run(()->climbMotor.setVoltage(-3));
+    return run(()->climbMotor.set(-Constants.ClimberConstants.MOTOR_SPEED));
   }
 
   public Command stop(){

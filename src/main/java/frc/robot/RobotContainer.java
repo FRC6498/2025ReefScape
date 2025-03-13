@@ -110,6 +110,10 @@ public class RobotContainer {
     
         // reset the field-centric heading on left bumper press
         driveController.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        // climber
+        driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop());
+        driveController.leftBumper().whileTrue(climberSub.runReverse()).onFalse(climberSub.stop());
         
         // Coral Intake
         operatorController.leftBumper().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
@@ -133,8 +137,6 @@ public class RobotContainer {
         // 
         //operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
             //.until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
-        driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop());
-        driveController.leftBumper().whileTrue(climberSub.runReverse()).onFalse(climberSub.stop());
 
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
