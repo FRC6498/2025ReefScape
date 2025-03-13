@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -78,20 +79,20 @@ public class RobotContainer {
                 .withRotationalRate(driveController.getRightX() * MaxAngularRate) 
             )
         );
-        driveController.x().whileTrue(
-            drivetrain.applyRequest(() -> drive
-                .withVelocityX(.5)
-                .withVelocityY(0)
-                .withRotationalRate(0)
-            )
-        );
-        driveController.y().whileTrue(
-            drivetrain.applyRequest(() -> drive
-                .withVelocityX(0)
-                .withVelocityY(0)
-                .withRotationalRate(.5)
-            )
-        );
+        // driveController.x().whileTrue(
+        //     drivetrain.applyRequest(() -> drive
+        //         .withVelocityX(.5)
+        //         .withVelocityY(0)
+        //         .withRotationalRate(0)
+        //     )
+        // );
+        // driveController.y().whileTrue(
+        //     drivetrain.applyRequest(() -> drive
+        //         .withVelocityX(0)
+        //         .withVelocityY(0)
+        //         .withRotationalRate(.5)
+        //     )
+        // );
         driveController.a().whileTrue(
             drivetrain.applyRequest(() -> brake)
             );
@@ -108,7 +109,11 @@ public class RobotContainer {
 
     
         // reset the field-centric heading on left bumper press
-        driveController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        driveController.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        // climber
+        driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop());
+        driveController.leftBumper().whileTrue(climberSub.runReverse()).onFalse(climberSub.stop());
         
         // Coral Intake
         operatorController.leftBumper().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
@@ -130,9 +135,9 @@ public class RobotContainer {
         operatorController.start().onTrue(armSub.runToRotationsMagic(21));
         
         // 
-        operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
-            .until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
-        
+        //operatorController.x().whileTrue(armSub.runToRotationsMagic(5).unless(armSub.canRaise())
+            //.until(armSub.canRaise()).andThen(liftSub.scrimageSetup(.1))).whileFalse(liftSub.liftStop());
+
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
         
