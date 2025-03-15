@@ -51,6 +51,18 @@
           "data": {
             "name": "Lift Position One"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left reef to Left coral station"
+          }
         }
       ]
     }

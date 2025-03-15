@@ -22,7 +22,7 @@ public class Constants {
     public class ClimberConstants {
         public static final int CLIMB_MOTOR_ID = 26;
         public static final int ACTUATOR_PWM_PORT = 0;
-        public static final double MOTOR_SPEED = 0.4;
+        public static final double MOTOR_SPEED = 0.8;
     }
     public class ArmConstants {
         public static final int ARM_MOTOR_ID = 23;

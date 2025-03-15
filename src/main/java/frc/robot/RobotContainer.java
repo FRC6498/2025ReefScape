@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
@@ -54,6 +55,14 @@ public class RobotContainer {
         armSub = new Arm();
         climberSub = new Climber();
         logger = new Telemetry(MaxSpeed);
+
+        // auto zero lift
+        CommandScheduler.getInstance().schedule(
+            liftSub.liftStop().
+            withTimeout(.1).
+            andThen(liftSub.zeroLift())
+        );
+
         // Pathplanner Commands
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
