@@ -34,7 +34,7 @@ public class Climber extends SubsystemBase {
     climbMotor.setNeutralMode(NeutralModeValue.Brake);
     climbMotor.getConfigurator().apply(new SoftwareLimitSwitchConfigs()
         .withForwardSoftLimitThreshold(Rotations.of(380))
-        .withForwardSoftLimitEnable(true)
+        .withForwardSoftLimitEnable(false)
         .withReverseSoftLimitEnable(false));
 
     
@@ -49,7 +49,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Command stop(){
-    return runOnce(()->climbMotor.stopMotor());
+    return runOnce(()->climbMotor.stopMotor()); 
   }
 
   public Command unlatch(){

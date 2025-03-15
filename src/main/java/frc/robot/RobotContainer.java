@@ -96,7 +96,8 @@ public class RobotContainer {
         driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop()); // in
         driveController.leftBumper().whileTrue(climberSub.runReverse()).onFalse(climberSub.stop());  // out
         driveController.b().onTrue(climberSub.unlatch());
-        driveController.povUp(); // reset latch
+        driveController.povUp().onTrue(climberSub.reverseLatch()); // reset latch
+        
 
         // Coral Intake
         operatorController.leftBumper().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
