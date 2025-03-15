@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -701,7 +702,7 @@ public class LimelightHelpers {
         return inData[position];
     }
 
-    private static PoseEstimate getBotPoseEstimate(String limelightName, String entryName, boolean isMegaTag2) {
+    private static Optional<PoseEstimate> getBotPoseEstimate(String limelightName, String entryName, boolean isMegaTag2) {
         DoubleArrayEntry poseEntry = LimelightHelpers.getLimelightDoubleArrayEntry(limelightName, entryName);
         
         TimestampedDoubleArray tsValue = poseEntry.getAtomic();
@@ -710,7 +711,7 @@ public class LimelightHelpers {
         
         if (poseArray.length == 0) {
             // Handle the case where no data is available
-            return null; // or some default PoseEstimate
+            return Optional.empty(); // or some default PoseEstimate
         }
     
         var pose = toPose2D(poseArray);
@@ -743,7 +744,7 @@ public class LimelightHelpers {
             }
         }
     
-        return new PoseEstimate(pose, adjustedTimestamp, latency, tagCount, tagSpan, tagDist, tagArea, rawFiducials, isMegaTag2);
+        return Optional.of(new PoseEstimate(pose, adjustedTimestamp, latency, tagCount, tagSpan, tagDist, tagArea, rawFiducials, isMegaTag2));
     }
 
     /**
@@ -1267,7 +1268,7 @@ public class LimelightHelpers {
      * @param limelightName
      * @return
      */
-    public static PoseEstimate getBotPoseEstimate_wpiBlue(String limelightName) {
+    public static Optional<PoseEstimate> getBotPoseEstimate_wpiBlue(String limelightName) {
         return getBotPoseEstimate(limelightName, "botpose_wpiblue", false);
     }
 
@@ -1278,7 +1279,7 @@ public class LimelightHelpers {
      * @param limelightName
      * @return
      */
-    public static PoseEstimate getBotPoseEstimate_wpiBlue_MegaTag2(String limelightName) {
+    public static Optional<PoseEstimate> getBotPoseEstimate_wpiBlue_MegaTag2(String limelightName) {
         return getBotPoseEstimate(limelightName, "botpose_orb_wpiblue", true);
     }
 
@@ -1302,7 +1303,7 @@ public class LimelightHelpers {
      * @param limelightName
      * @return
      */
-    public static PoseEstimate getBotPoseEstimate_wpiRed(String limelightName) {
+    public static Optional<PoseEstimate> getBotPoseEstimate_wpiRed(String limelightName) {
         return getBotPoseEstimate(limelightName, "botpose_wpired", false);
     }
 
@@ -1312,7 +1313,7 @@ public class LimelightHelpers {
      * @param limelightName
      * @return
      */
-    public static PoseEstimate getBotPoseEstimate_wpiRed_MegaTag2(String limelightName) {
+    public static Optional<PoseEstimate> getBotPoseEstimate_wpiRed_MegaTag2(String limelightName) {
         return getBotPoseEstimate(limelightName, "botpose_orb_wpired", true);
     }
 

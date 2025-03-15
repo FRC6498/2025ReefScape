@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -61,7 +62,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Command reverseLatch(){
-    return runOnce(()->latchActuator.setLength(30));
+    return runOnce(()->latchActuator.setLength(Inches.of(1.8)));
   }
 
   @Override

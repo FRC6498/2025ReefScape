@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.lang.StackWalker.Option;
 import java.util.Optional;
 
 
@@ -20,12 +21,14 @@ public class Vision extends SubsystemBase {
   }
 
   public Optional<LimelightHelpers.PoseEstimate> getBotPose() {
-    if (Robot.isSimulation()) return Optional.empty();
-
     //get the latest estimate from the limelight
-    LimelightHelpers.PoseEstimate est = LimelightHelpers
+    Optional<LimelightHelpers.PoseEstimate> optinalEst = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.LIMELIGHT_NAME);
     
+    if (optinalEst.isEmpty()) return Optional.empty();
+
+    LimelightHelpers.PoseEstimate est = optinalEst.get();
+
     boolean doRejectUpdate = false;
     //cases when we should reject the latest update 
     if (est.tagCount == 1 && est.rawFiducials.length == 1) {
