@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 6.148273026315788,
-        "y": 4.063486842105263
+        "x": 5.782844387755103,
+        "y": 3.857110969387754
       },
       "prevControl": {
-        "x": 6.326423850019863,
-        "y": 4.238878643548659
+        "x": 5.960994834217302,
+        "y": 3.6817187847690565
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.60281897270372
+    "rotation": -0.18602460450753694
   },
   "reversed": false,
   "folder": "Field Middle to Reef Middle",

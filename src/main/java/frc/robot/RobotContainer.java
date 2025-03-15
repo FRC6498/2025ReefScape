@@ -57,6 +57,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
         NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake().withTimeout(.2));
+        NamedCommands.registerCommand("Lift Position One", safeLift(0));
         NamedCommands.registerCommand("Lift Position Two", safeLift(7));
         NamedCommands.registerCommand("Lift Position Four", safeLift(30));
 

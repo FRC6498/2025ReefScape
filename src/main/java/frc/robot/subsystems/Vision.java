@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.Robot;
 
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
@@ -19,6 +20,8 @@ public class Vision extends SubsystemBase {
   }
 
   public Optional<LimelightHelpers.PoseEstimate> getBotPose() {
+    if (Robot.isSimulation()) return Optional.empty();
+
     //get the latest estimate from the limelight
     LimelightHelpers.PoseEstimate est = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.LIMELIGHT_NAME);

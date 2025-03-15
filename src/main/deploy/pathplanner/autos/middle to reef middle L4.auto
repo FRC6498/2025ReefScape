@@ -7,31 +7,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right to Reef Right"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
+            "pathName": "Middle to Reef Middle"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ejectIntake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Intake"
+            "name": "Lift Position Four"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.0
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Eject Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lift Position One"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
           }
         }
       ]
