@@ -60,6 +60,10 @@ public class Climber extends SubsystemBase {
     return runOnce(()->solenoid.set(true));
   }
 
+  public Command reverseLatch(){
+    return runOnce(()->latchActuator.setLength(30));
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("climber position", climbMotor.getPosition().getValueAsDouble());

@@ -80,9 +80,9 @@ public class RobotContainer {
             )
         );
 
-        driveController.a().whileTrue(
-            drivetrain.applyRequest(() -> brake)
-            );
+        // driveController.a().whileTrue(
+        //     drivetrain.applyRequest(() -> brake)
+        //     );
         // driveController.b().whileTrue(drivetrain.applyRequest(() -> point
         //         .withModuleDirection(
         //             new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX())
@@ -93,9 +93,10 @@ public class RobotContainer {
         driveController.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         // climber
-        driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop());
-        driveController.leftBumper().whileTrue(climberSub.runReverse()).onFalse(climberSub.stop());
+        driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop()); // in
+        driveController.leftBumper().whileTrue(climberSub.runReverse()).onFalse(climberSub.stop());  // out
         driveController.b().onTrue(climberSub.unlatch());
+        driveController.povUp(); // reset latch
 
         // Coral Intake
         operatorController.leftBumper().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
