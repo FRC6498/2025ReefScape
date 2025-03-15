@@ -82,11 +82,11 @@ public class RobotContainer {
         driveController.a().whileTrue(
             drivetrain.applyRequest(() -> brake)
             );
-        driveController.b().whileTrue(drivetrain.applyRequest(() -> point
-                .withModuleDirection(
-                    new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX())
-                )
-        ));
+        // driveController.b().whileTrue(drivetrain.applyRequest(() -> point
+        //         .withModuleDirection(
+        //             new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX())
+        //         )
+        // ));z
     
         // reset the field-centric heading on left bumper press
         driveController.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -94,7 +94,8 @@ public class RobotContainer {
         // climber
         driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop());
         driveController.leftBumper().whileTrue(climberSub.runReverse()).onFalse(climberSub.stop());
-        
+        driveController.b().onTrue(climberSub.unlatch());
+
         // Coral Intake
         operatorController.leftBumper().whileTrue(intakeSub.runIntake()).whileFalse(intakeSub.stopIntake());
 

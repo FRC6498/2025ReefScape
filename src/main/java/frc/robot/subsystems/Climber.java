@@ -11,6 +11,8 @@ import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,6 +23,7 @@ public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
   private TalonFX climbMotor = new TalonFX(Constants.ClimberConstants.CLIMB_MOTOR_ID);
   private LinearActuator latchActuator = new LinearActuator(Constants.ClimberConstants.ACTUATOR_PWM_PORT, 140);
+  private DigitalOutput solenoid = new DigitalOutput(0);
 
   public Climber() {
 
@@ -51,6 +54,10 @@ public class Climber extends SubsystemBase {
 
   public Command unlatch(){
     return runOnce(()->latchActuator.setLength(0));
+  }
+
+  public Command unlatchSolenoid(){
+    return runOnce(()->solenoid.set(true));
   }
 
   @Override
