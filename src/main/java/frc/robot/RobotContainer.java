@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -132,7 +133,7 @@ public class RobotContainer {
         operatorController.povRight().onTrue(safeLift(16));
         
         // Run lift to level 3
-        operatorController.povUp().onTrue(safeLift(30));
+        operatorController.povUp().onTrue(safeLift(29));
         
         // Eject algea to barge
         // Run lift to max and Rotate arm to Algea eject position
@@ -145,6 +146,7 @@ public class RobotContainer {
         return armSub.runToRotationsMagic(5)
                      .unless(armSub.canRaise())
                      .until(armSub.canRaise())
+                     .withTimeout(2)
                      .andThen(liftSub.runToRotations(rotations));
     }
         

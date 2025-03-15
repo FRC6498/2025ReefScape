@@ -62,7 +62,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Command reverseLatch(){
-    return runOnce(()->latchActuator.setLength(Inches.of(1.8)));
+    return runOnce(()->latchActuator.setLength(Inches.of(1.9)));
   }
 
   @Override

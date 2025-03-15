@@ -22,6 +22,10 @@ public class Vision extends SubsystemBase {
 
   public Optional<LimelightHelpers.PoseEstimate> getBotPose() {
     //get the latest estimate from the limelight
+
+    if (Robot.isSimulation()) return Optional.empty();
+    // return Optional.empty();
+
     Optional<LimelightHelpers.PoseEstimate> optinalEst = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.LIMELIGHT_NAME);
     
@@ -42,8 +46,8 @@ public class Vision extends SubsystemBase {
     if (est.tagCount == 0) {
       doRejectUpdate = true;
     }
-    //return an empty optional if the update should be rejected 
-    //return an optional that contains the update if the update is valid
+    // return an empty optional if the update should be rejected 
+    // return an optional that contains the update if the update is valid
     Optional<LimelightHelpers.PoseEstimate> sentEstimate = !doRejectUpdate ? Optional.of(est) : Optional.empty();
     return sentEstimate;
   }
