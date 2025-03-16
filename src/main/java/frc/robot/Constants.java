@@ -15,7 +15,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 public class Constants {
     public class IntakeConstants {
         public static final int INTAKE_MOTOR_ID = 24;
-        public static final double INTAKE_DEFAULT_SPEED = -0.4;
+        public static final double INTAKE_DEFAULT_SPEED = -0.2;
         public static final double INTAKE_ALGAE_SPEED = -1;
         public static final int CANRANGE_SENSOR_ID = 25;
     }
