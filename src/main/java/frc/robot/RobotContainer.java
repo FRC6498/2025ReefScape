@@ -27,7 +27,7 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
 
-    // Drive Command configs    
+    // Drive Command configs
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1)
             .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -67,6 +67,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
         NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake().withTimeout(.2));
+        NamedCommands.registerCommand("Arm In", armSub.runToRotationsMagic(0).withTimeout(.1));
         NamedCommands.registerCommand("Lift Position One", safeLift(0));
         NamedCommands.registerCommand("Lift Position Two", safeLift(7));
         NamedCommands.registerCommand("Lift Position Four", safeLift(30));
@@ -132,6 +133,11 @@ public class RobotContainer {
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
         
+
+        // homes arm and lift
+        // moves lift down then arm in
+        operatorController.x().onTrue(liftHome());
+
         // Run lift to 0
         operatorController.povDown().onTrue(safeLift(0));
         
@@ -157,6 +163,14 @@ public class RobotContainer {
                      .until(armSub.canRaise())
                      .withTimeout(2)
                      .andThen(liftSub.runToRotations(rotations));
+    }
+
+    public Command liftHome(){
+        return safeLift(0).
+            unless(liftSub.atBottom()).
+            until(liftSub.atBottom()).
+            withTimeout(2).
+            andThen(armSub.runToRotationsMagic(0));
     }
         
     public Command getAutonomousCommand() {

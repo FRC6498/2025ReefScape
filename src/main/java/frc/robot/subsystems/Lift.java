@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -44,6 +45,8 @@ public class Lift extends SubsystemBase {
   private final MutAngularVelocity liftVelocityRight = RadiansPerSecond.mutable(0);
   private final MutAngularAcceleration liftAccelerationRight = RadiansPerSecondPerSecond.mutable(0);
   private final SysIdRoutine routine;
+
+  private double goal = 0; // LOGGING ONLY 
 
   public Lift() {
     // configure motors
@@ -126,6 +129,7 @@ public class Lift extends SubsystemBase {
     return runOnce(() -> {
       rightMotor.setControl(requestRight.withPosition(rotations));
       leftMotor.setControl(requestLeft.withPosition(rotations));
+      goal = rotations;
     });
   }
 
@@ -142,6 +146,10 @@ public class Lift extends SubsystemBase {
 
   public double getRotations(){
     return leftMotor.getPosition().getValueAsDouble();
+  }
+
+  public BooleanSupplier atBottom() {
+      return () -> getRotations() < 1;
   }
 
   public Command scrimageSetup(double speed) {
@@ -162,5 +170,6 @@ public class Lift extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("lift rotations left", getRotations());
     SmartDashboard.putNumber("lift rotations right", rightMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("lift goal", goal);
   }
 }

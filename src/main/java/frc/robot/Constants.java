@@ -28,7 +28,7 @@ public class Constants {
         public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() 
         .withKA(0.0028603)//Feedforward gains
-        .withKG(-0.0780)
+        .withKG(-0.1)
         .withKS(0.20093)
         .withKV(0.1069)
         .withKP(0.010679)//PID 
@@ -51,8 +51,8 @@ public class Constants {
         .withKG(.47469)
         .withKS(.036355)
         .withKV(.12215)
-        .withKP(.1358)//PID 
-        .withKI(0)
+        .withKP(.6058)//PID 
+        .withKI(.05)
         .withKD(.1);
         public static final MotionMagicConfigs LIFT_MOTION_CONFIGS = new MotionMagicConfigs()
             .withMotionMagicAcceleration(100)
