@@ -107,7 +107,7 @@ public class Arm extends SubsystemBase {
   }
 
   public BooleanSupplier canRaise() {
-    return () -> armMotor.getPosition().getValueAsDouble() > 4;
+    return () -> armMotor.getPosition().getValueAsDouble() > 1.9;
   }
 
   public double armPosition() {
@@ -131,5 +131,9 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("ff", ff);
 
   }
+
+public Command zeroArm() {
+  return runOnce(()->armMotor.setPosition(0));
+}
 
 }

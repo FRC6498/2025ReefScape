@@ -60,7 +60,8 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(
             liftSub.liftStop().
             withTimeout(.1).
-            andThen(liftSub.zeroLift())
+            andThen(liftSub.zeroLift()).
+            andThen(armSub.zeroArm())
         );
 
         // Pathplanner Commands
@@ -121,7 +122,7 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
 
         // Run arm to Algea Position
-        operatorController.a().onTrue(armSub.runToRotationsMagic(17));
+        operatorController.a().onTrue(armSub.runToRotationsMagic(2));
 
         // Run arm to zero
         // stops arms so motion magic always returns to zero
@@ -144,6 +145,7 @@ public class RobotContainer {
         // Run lift to level 1
         operatorController.povLeft().onTrue(safeLift(7));
         
+
         // Run lift to level 2
         operatorController.povRight().onTrue(safeLift(16));
         
@@ -158,7 +160,7 @@ public class RobotContainer {
 
     // makes sure arm is out of the way before moving lift
     public Command safeLift(double rotations){
-        return armSub.runToRotationsMagic(5)
+        return armSub.runToRotationsMagic(2)
                      .unless(armSub.canRaise())
                      .until(armSub.canRaise())
                      .withTimeout(2)
