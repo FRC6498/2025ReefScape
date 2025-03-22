@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.806615511321174,
-        "y": 6.568453027178511
+        "x": 6.830496175317545,
+        "y": 6.561805244680105
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.320216836734694,
-        "y": 5.050988520408163
+        "x": 5.42,
+        "y": 5.09
       },
       "prevControl": {
-        "x": 5.473448418455786,
-        "y": 5.371222791587085
+        "x": 5.5043324342099025,
+        "y": 5.341229653054811
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Ipos"
     }
   ],
   "rotationTargets": [],
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 58.570434385161604
+    "velocity": 0.0,
+    "rotation": 58.60000000000001
   },
   "reversed": false,
   "folder": "Field Middle to Reef Left",

@@ -67,11 +67,13 @@ public class RobotContainer {
         // Pathplanner Commands
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
-        NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake().withTimeout(.2));
+        NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake().withTimeout(.5));
+        NamedCommands.registerCommand("Arm Out", armSub.runToRotationsMagic(5).withTimeout(.5));
+        NamedCommands.registerCommand("Arm Liftpos", armSub.runToRotationsMagic(2).withTimeout(.2));
         NamedCommands.registerCommand("Arm In", armSub.runToRotationsMagic(0).withTimeout(.1));
-        NamedCommands.registerCommand("Lift Position One", safeLift(0));
-        NamedCommands.registerCommand("Lift Position Two", safeLift(7));
-        NamedCommands.registerCommand("Lift Position Four", safeLift(30));
+        NamedCommands.registerCommand("Lift Position One", safeLift(0).withTimeout(1.5).andThen(liftSub.liftStop()));
+        NamedCommands.registerCommand("Lift Position Two", safeLift(7).withTimeout(.5));
+        NamedCommands.registerCommand("Lift Position Four", safeLift(30).withTimeout(1));
 
         
         chooser = AutoBuilder.buildAutoChooser();
@@ -86,8 +88,8 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() -> drive
-                .withVelocityX(driveController.getLeftY() * MaxSpeed) 
-                .withVelocityY(driveController.getLeftX() * MaxSpeed) 
+                .withVelocityX(-driveController.getLeftY() * MaxSpeed)
+                .withVelocityY(-driveController.getLeftX() * MaxSpeed) 
                 .withRotationalRate(driveController.getRightX() * MaxAngularRate) 
             )
         );
@@ -122,25 +124,35 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
 
         // Run arm to Algea Position
-        operatorController.a().onTrue(armSub.runToRotationsMagic(2));
+        operatorController.a().onTrue(armSub.runToRotationsMagic(17));
 
         // Run arm to zero
-        // stops arms so motion magic always returns to zero
-        operatorController.b().onTrue(armSub.stopArm().andThen(armSub.runToRotationsMagic(0)));
+        // stops arms so motion magic always returns to 
+        
+
+        operatorController.b().onTrue(
+            armSub.runToRotationsMagic(0)
+            // .withTimeout(.1)
+            // .andThen(armSub.runToRotationsMagic(0))
+            // .withTimeout(.1)
+            // .andThen(armSub.stopArm())
+            // .withTimeout(.1)
+            // .andThen(armSub.runToRotationsMagic(0))
+            );
 
         // Run arm to Algea eject Position
-        operatorController.start().onTrue(armSub.runToRotationsMagic(21));
-        
+        // operatorController.start().onTrue(armSub.runToRotationsMagic(21));
+        operatorController.start().onTrue(liftSub.scrimageSetup(.1)).onFalse(liftSub.liftStop());
+
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
-        
 
         // homes arm and lift
         // moves lift down then arm in
         operatorController.x().onTrue(liftHome());
 
         // Run lift to 0
-        operatorController.povDown().onTrue(safeLift(0));
+        operatorController.povDown().onTrue(safeLift(0).withTimeout(2).andThen(liftSub.liftStop()));
         
         // Run lift to level 1
         operatorController.povLeft().onTrue(safeLift(7));
@@ -154,7 +166,7 @@ public class RobotContainer {
         
         // Eject algea to barge
         // Run lift to max and Rotate arm to Algea eject position
-        operatorController.y().onTrue(safeLift(33.8).andThen(armSub.runToRotationsMagic(14)));
+        operatorController.y().onTrue(safeLift(33).withTimeout(.5).andThen(armSub.runToRotationsMagic(15)));
 
     }
 
@@ -180,3 +192,4 @@ public class RobotContainer {
     }
 
 }
+

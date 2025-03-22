@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.320216836734694,
-        "y": 5.065911989795918
+        "x": 5.42,
+        "y": 5.08
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.051594387755102,
-        "y": 5.789700255102041
+        "x": 5.386277767455806,
+        "y": 5.378287152769447
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Ipos"
     },
     {
       "anchor": {
@@ -20,24 +20,24 @@
         "y": 6.438871173469388
       },
       "prevControl": {
-        "x": 4.588966836734691,
-        "y": 6.0583227040816325
+        "x": 4.771366664233237,
+        "y": 5.276106587423681
       },
       "nextControl": {
-        "x": 2.081137793701282,
-        "y": 7.190174750052465
+        "x": 2.4966664468737165,
+        "y": 7.855087812473675
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6191964285714286,
-        "y": 7.267123724489795
+        "x": 1.02,
+        "y": 7.13
       },
       "prevControl": {
-        "x": 2.6190688775510216,
-        "y": 7.005963010204081
+        "x": 1.564131408389374,
+        "y": 7.586451011025698
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +58,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.79394299861667
+    "rotation": 126.6922858489528
   },
   "reversed": false,
   "folder": "reef to pickup",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.79108489871121
+    "rotation": 58.60000000000001
   },
   "useDefaultConstraints": true
 }

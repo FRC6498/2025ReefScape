@@ -28,12 +28,12 @@ public class Constants {
         public static final int ARM_MOTOR_ID = 23;
         public static final Slot0Configs ARM_MOTOR_CONFIG = new Slot0Configs() 
         .withKA(0.0028603)//Feedforward gains
-        .withKG(0)
+        .withKG(.12)
         .withKS(0.20093)
         .withKV(0.1069)
-        .withKP(0.010679)//PID 
-        .withKI(0)
-        .withKD(0);
+        .withKP(0.040679)//PID 
+        .withKI(.01)
+        .withKD(.2);
         public static final MotionMagicConfigs ARM_MOTION_CONFIGS = new MotionMagicConfigs()
             .withMotionMagicCruiseVelocity(60) // max velocity
             .withMotionMagicAcceleration(120) // max acceleration

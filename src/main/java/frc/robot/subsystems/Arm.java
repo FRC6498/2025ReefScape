@@ -88,13 +88,16 @@ public class Arm extends SubsystemBase {
     // feedforward needs to convert from arm motor rotations to arm gearbox output position in radians rotated 90 degrees
     // math : (motor rotations / gear ratio) * (2 * PI) + (PI/2)
     //double ff = armFeedForward.calculate(setpointRotations/50.4 * (2* Math.PI) + (Math.PI/2), 0);
-    double ff = armFeedForward.calculate((setpointRotations/50.4) * (2*Math.PI) - (Math.PI/2), 0);
-    SmartDashboard.putNumber("ff", ff);
+    /// measured "up" position : 5.237
     return run(() -> 
-    armMotor.setControl(
-      request.withPosition(setpointRotations)
-        .withFeedForward(ff)
-      )
+      {
+      double ff = armFeedForward.calculate((setpointRotations/50.4) * (2*Math.PI) - 5.237, 0);
+      ff = setpointRotations > 8 ? 2.8 * ff : .8 * ff;
+      armMotor.setControl(
+        request.withPosition(setpointRotations)
+          .withFeedForward(ff)
+        );
+      }
     );
   }
 
@@ -127,7 +130,7 @@ public class Arm extends SubsystemBase {
 
     SmartDashboard.putNumber("V", armMotor.getMotorVoltage().getValueAsDouble());
 
-    double ff = armFeedForward.calculate((armPosition()/46.69 - 12.6)*2*Math.PI, 0);
+    double ff = armFeedForward.calculate((armPosition()/50.4) * (2*Math.PI) - 5.2, 0);
     SmartDashboard.putNumber("ff", ff);
 
   }

@@ -13,6 +13,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -58,12 +59,18 @@ public class Lift extends SubsystemBase {
       .withSlot0(Constants.LiftConstants.LIFT_MOTOR_CONFIG)
       .withMotionMagic(Constants.LiftConstants.LIFT_MOTION_CONFIGS);
     CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs().withStatorCurrentLimit(40);
+    SoftwareLimitSwitchConfigs limitConfig = new SoftwareLimitSwitchConfigs()
+      .withForwardSoftLimitEnable(false)
+      .withForwardSoftLimitThreshold(32);
+    
     rightMotor.getConfigurator().apply(config);
     rightMotor.getConfigurator().apply(currentConfig);
+    rightMotor.getConfigurator().apply(limitConfig);
     rightMotor.setNeutralMode(NeutralModeValue.Brake);
     
     leftMotor.getConfigurator().apply(config);
     leftMotor.getConfigurator().apply(currentConfig);
+    leftMotor.getConfigurator().apply(limitConfig);
     leftMotor.setNeutralMode(NeutralModeValue.Brake);
 
     // slave the left side to the right side to stop them from fighting each other
@@ -126,9 +133,9 @@ public class Lift extends SubsystemBase {
   public Command runToRotations(double rotations) {
     MotionMagicVoltage requestRight = new MotionMagicVoltage(rightMotor.getPosition().getValueAsDouble());
     MotionMagicVoltage requestLeft = new MotionMagicVoltage(leftMotor.getPosition().getValueAsDouble());
-    return runOnce(() -> {
+    return run(() -> {
+      leftMotor.setControl(new Follower(LiftConstants.RIGHT_LIFT_MOTOR_ID, false));
       rightMotor.setControl(requestRight.withPosition(rotations));
-      leftMotor.setControl(requestLeft.withPosition(rotations));
       goal = rotations;
     });
   }
