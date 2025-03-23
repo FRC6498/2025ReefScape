@@ -1,0 +1,18 @@
+Drivetrain SysID tuning TODO list
+1. Find slip current limit (what current are the motors drawing when the wheels start slipping)
+    Put the robot against a wall and run the motors untill the wheels start slipping
+    Find the current the motors are drawing when the wheels start slipping (look in tuner)
+2. Do SysID for drive motors
+    Put robot in big open area and run the translation characterization command
+3. Do Sysid for turn motors
+    same as #2 but with steerCharicterization command
+
+Things to find out about the robot
+1. Mass
+2. MOI (Cad should be able to give a number for this if their model has accurate materials)
+3. Max linear speed (just drive in a straight line)
+4. Max rotational speed
+5. module positions ( x[forward/back] and y[left/right] ) from the center of the robot in meters
+5. exact Drive gear ratio
+6. Dimensions including bumpers
+All of these need to be added to the pathplanner settings
