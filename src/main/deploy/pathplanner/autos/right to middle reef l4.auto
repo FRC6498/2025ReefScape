@@ -31,6 +31,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Arm Out"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Eject Intake"
           }
         },
@@ -43,19 +49,62 @@
         {
           "type": "named",
           "data": {
-            "name": "Lift Position One"
+            "name": "Arm Liftpos"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lift Position Three"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 0.3
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Arm In"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back Up H"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm Algae"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "HGback to Algae"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Algae Intake"
+                }
+              }
+            ]
           }
         }
       ]

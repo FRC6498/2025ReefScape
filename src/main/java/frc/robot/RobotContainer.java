@@ -67,12 +67,15 @@ public class RobotContainer {
         // Pathplanner Commands
         NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
+        NamedCommands.registerCommand("Algae Intake", intakeSub.intakeAlgaeCommand().withTimeout(2).andThen(intakeSub.stopIntake()));
         NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake().withTimeout(.5));
         NamedCommands.registerCommand("Arm Out", armSub.runToRotationsMagic(5).withTimeout(.5));
+        NamedCommands.registerCommand("Arm Algae", armSub.runToRotationsMagic(17).withTimeout(.3));
         NamedCommands.registerCommand("Arm Liftpos", armSub.runToRotationsMagic(2).withTimeout(.2));
         NamedCommands.registerCommand("Arm In", armSub.runToRotationsMagic(0).withTimeout(.1));
         NamedCommands.registerCommand("Lift Position One", safeLift(0).withTimeout(1.5).andThen(liftSub.liftStop()));
         NamedCommands.registerCommand("Lift Position Two", safeLift(7).withTimeout(.5));
+        NamedCommands.registerCommand("Lift Position Three", safeLift(17).withTimeout(.5));
         NamedCommands.registerCommand("Lift Position Four", safeLift(30).withTimeout(1));
 
         
@@ -124,7 +127,7 @@ public class RobotContainer {
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
 
         // Run arm to Algea Position
-        operatorController.a().onTrue(armSub.runToRotationsMagic(17));
+        operatorController.a().onTrue(armSub.runToRotationsMagic(5));
 
         // Run arm to zero
         // stops arms so motion magic always returns to 

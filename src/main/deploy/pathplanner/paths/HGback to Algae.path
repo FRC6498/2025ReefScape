@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.722895408163266,
-        "y": 4.16
+        "x": 6.312627551020409,
+        "y": 4.028730867346938
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.48147113724024,
-        "y": 4.200849315834715
+        "x": 6.062939757714674,
+        "y": 4.016240636199647
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "HG back"
     },
     {
       "anchor": {
-        "x": 5.87,
-        "y": 4.16
+        "x": 5.932079081632653,
+        "y": 4.028730867346938
       },
       "prevControl": {
-        "x": 6.770980669908955,
-        "y": 4.1836967677586205
+        "x": 6.626075783019514,
+        "y": 4.02659113274745
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Hpos"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 0.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.4092486080349332
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Field Middle to Reef Middle",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
