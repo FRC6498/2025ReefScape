@@ -98,4 +98,7 @@ public double getDistance() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("detected", intakeStop().getAsBoolean());
   }
+  public BooleanSupplier stopEject() {
+    return () -> !intakeStop().getAsBoolean();
+  }
 }

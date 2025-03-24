@@ -81,6 +81,18 @@
           "data": {
             "pathName": "Left reef to Left coral station"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coral station L to L reef"
+          }
         }
       ]
     }

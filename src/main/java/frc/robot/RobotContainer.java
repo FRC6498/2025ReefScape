@@ -65,10 +65,10 @@ public class RobotContainer {
         );
 
         // Pathplanner Commands
-        NamedCommands.registerCommand("Run Intake", intakeSub.runIntake());
+        NamedCommands.registerCommand("Run Intake", intakeSub.runIntake().until(intakeSub.intakeStop()));
         NamedCommands.registerCommand("Stop Intake", intakeSub.stopIntake());
         NamedCommands.registerCommand("Algae Intake", intakeSub.intakeAlgaeCommand().withTimeout(2).andThen(intakeSub.stopIntake()));
-        NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake().withTimeout(.5));
+        NamedCommands.registerCommand("Eject Intake", intakeSub.ejectIntake().until(intakeSub.stopEject()));
         NamedCommands.registerCommand("Arm Out", armSub.runToRotationsMagic(5).withTimeout(.5));
         NamedCommands.registerCommand("Arm Algae", armSub.runToRotationsMagic(17).withTimeout(.3));
         NamedCommands.registerCommand("Arm Liftpos", armSub.runToRotationsMagic(2).withTimeout(.2));
@@ -145,7 +145,7 @@ public class RobotContainer {
 
         // Run arm to Algea eject Position
         // operatorController.start().onTrue(armSub.runToRotationsMagic(21));
-        operatorController.start().onTrue(liftSub.scrimageSetup(.1)).onFalse(liftSub.liftStop());
+        operatorController.start().onTrue(intakeSub.ejectIntake().until(intakeSub.stopEject()).andThen(intakeSub.stopIntake()));
 
         // Algea eject
         operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
@@ -155,7 +155,7 @@ public class RobotContainer {
         operatorController.x().onTrue(liftHome());
 
         // Run lift to 0
-        operatorController.povDown().onTrue(safeLift(0).withTimeout(2).andThen(liftSub.liftStop()));
+        operatorController.povDown().onTrue(safeLift(0).withTimeout(1.3).andThen(liftSub.liftStop()));
         
         // Run lift to level 1
         operatorController.povLeft().onTrue(safeLift(7));
