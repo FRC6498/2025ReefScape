@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle to Reef Left"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left reef to Left coral station"
+            "pathName": "leave right"
           }
         }
       ]

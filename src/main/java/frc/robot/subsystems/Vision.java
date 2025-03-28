@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import java.lang.StackWalker.Option;
 import java.util.Optional;
 
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -36,6 +36,7 @@ public class Vision extends SubsystemBase {
     boolean doRejectUpdate = false;
     //cases when we should reject the latest update 
     if (est.tagCount == 1 && est.rawFiducials.length == 1) {
+      SmartDashboard.putNumber("tag0 dist", est.rawFiducials[0].distToCamera);
       if (est.rawFiducials[0].ambiguity > .7) {
         doRejectUpdate = true;
       }
@@ -46,6 +47,8 @@ public class Vision extends SubsystemBase {
     if (est.tagCount == 0) {
       doRejectUpdate = true;
     }
+
+
     // return an empty optional if the update should be rejected 
     // return an optional that contains the update if the update is valid
     Optional<LimelightHelpers.PoseEstimate> sentEstimate = !doRejectUpdate ? Optional.of(est) : Optional.empty();

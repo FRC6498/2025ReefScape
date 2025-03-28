@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.4246811224489795,
-        "y": 5.170376275510204
+        "x": 5.37,
+        "y": 5.09
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.390958889904786,
-        "y": 5.468663428279651
+        "x": 5.336277767455806,
+        "y": 5.388287152769447
       },
       "isLocked": false,
       "linkedName": "Ipos"
@@ -64,7 +64,7 @@
   "folder": "reef to pickup",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 58.60000000000001
+    "rotation": 59.3175104339566
   },
   "useDefaultConstraints": true
 }

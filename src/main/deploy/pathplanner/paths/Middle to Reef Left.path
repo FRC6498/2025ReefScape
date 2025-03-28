@@ -16,20 +16,39 @@
     },
     {
       "anchor": {
-        "x": 5.4246811224489795,
-        "y": 5.170376275510204
+        "x": 5.38,
+        "y": 5.09
       },
       "prevControl": {
-        "x": 5.565206490173225,
-        "y": 5.462624145148814
+        "x": 5.520525367724246,
+        "y": 5.38224786963861
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Ipos"
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.23872679045092807,
+      "rotationDegrees": 43.2387605588255
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.869127516778524,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -42,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 58.60000000000001
+    "rotation": 59.3175104339566
   },
   "reversed": false,
   "folder": "Field Middle to Reef Left",

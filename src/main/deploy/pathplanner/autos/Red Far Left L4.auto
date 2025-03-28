@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle to Reef Middle"
+            "pathName": "red middle barge to right reef"
           }
         },
         {
@@ -19,7 +19,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm Out"
           }
         },
         {
@@ -29,15 +35,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Stop Intake"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop Intake"
+            "name": "Arm Liftpos"
           }
         },
         {
@@ -49,7 +61,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.75
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm In"
           }
         }
       ]

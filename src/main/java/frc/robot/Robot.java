@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.pathfinding.LocalADStar;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,6 +22,8 @@ public class Robot extends TimedRobot {
     for (int i = 5800; i <= 5809; i++) {
       PortForwarder.add(i, "limelight.local", i); // adds the port to access limelight directly
     }
+
+    Pathfinding.setPathfinder(new LocalADStar());
   }
 
   @Override

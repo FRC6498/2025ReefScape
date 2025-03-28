@@ -82,8 +82,17 @@ public class Arm extends SubsystemBase {
     return armRoutine.dynamic(direction);
   }
 
-  public Command 
-  runToRotationsMagic(double setpointRotations) {
+  public Command goToZero(){
+    return runToRotationsMagic(0)
+      .until(inIn())
+      .andThen(run(()->armMotor.set(-0.05)))
+      .until(
+        ()-> armMotor.getVelocity().getValueAsDouble() == 0
+        && armPosition() < 0.3)
+      .andThen(stopArm());
+  }
+
+  public Command runToRotationsMagic(double setpointRotations) {
     MotionMagicVoltage request = new MotionMagicVoltage(armMotor.getPosition().getValueAsDouble());
     // feedforward needs to convert from arm motor rotations to arm gearbox output position in radians rotated 90 degrees
     // math : (motor rotations / gear ratio) * (2 * PI) + (PI/2)
@@ -112,6 +121,9 @@ public class Arm extends SubsystemBase {
   public BooleanSupplier canRaise() {
     return () -> armMotor.getPosition().getValueAsDouble() > 1.9;
   }
+  public BooleanSupplier inIn(){
+    return () -> armPosition() < 1;
+  }
 
   public double armPosition() {
     return armMotor.getPosition().getValueAsDouble();
@@ -132,6 +144,8 @@ public class Arm extends SubsystemBase {
 
     double ff = armFeedForward.calculate((armPosition()/50.4) * (2*Math.PI) - 5.2, 0);
     SmartDashboard.putNumber("ff", ff);
+
+    SmartDashboard.putNumber("Arm velocity", armMotor.getVelocity().getValueAsDouble());
 
   }
 

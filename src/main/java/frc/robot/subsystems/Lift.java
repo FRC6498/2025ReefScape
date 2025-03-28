@@ -156,7 +156,7 @@ public class Lift extends SubsystemBase {
   }
 
   public BooleanSupplier atBottom() {
-      return () -> getRotations() < 1;
+      return () -> getRotations() < 2;
   }
 
   public Command scrimageSetup(double speed) {
@@ -178,5 +178,6 @@ public class Lift extends SubsystemBase {
     SmartDashboard.putNumber("lift rotations left", getRotations());
     SmartDashboard.putNumber("lift rotations right", rightMotor.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("lift goal", goal);
+    SmartDashboard.putBoolean("at bottom", atBottom().getAsBoolean());
   }
 }

@@ -32,7 +32,7 @@ public class Constants {
         .withKS(0.20093)
         .withKV(0.1069)
         .withKP(0.040679)//PID 
-        .withKI(.01)
+        .withKI(0)
         .withKD(.2);
         public static final MotionMagicConfigs ARM_MOTION_CONFIGS = new MotionMagicConfigs()
             .withMotionMagicCruiseVelocity(60) // max velocity
@@ -40,7 +40,8 @@ public class Constants {
             .withMotionMagicJerk(1000); //max change in acceleration
     }
     public class VisionConstants {
-        public static final String LIMELIGHT_NAME = "limelight"; //TODO: set the limelight name
+        public static final String 
+        LIMELIGHT_NAME = "limelight"; //TODO: set the limelight name
     }
     public static final class LiftConstants {
         public static final int RIGHT_LIFT_MOTOR_ID = 22; 

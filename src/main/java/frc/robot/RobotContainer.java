@@ -10,7 +10,10 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -73,10 +76,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("Arm Algae", armSub.runToRotationsMagic(17).withTimeout(.3));
         NamedCommands.registerCommand("Arm Liftpos", armSub.runToRotationsMagic(2).withTimeout(.2));
         NamedCommands.registerCommand("Arm In", armSub.runToRotationsMagic(0).withTimeout(.1));
-        NamedCommands.registerCommand("Lift Position One", safeLift(0).withTimeout(1.5).andThen(liftSub.liftStop()));
-        NamedCommands.registerCommand("Lift Position Two", safeLift(7).withTimeout(.5));
-        NamedCommands.registerCommand("Lift Position Three", safeLift(17).withTimeout(.5));
-        NamedCommands.registerCommand("Lift Position Four", safeLift(30).withTimeout(1));
+        NamedCommands.registerCommand("Lift Position One", safeLiftAuto(0).withTimeout(1.5).andThen(liftSub.liftStop()));
+        NamedCommands.registerCommand("Lift Position Two", safeLiftAuto(7).withTimeout(.5));
+        NamedCommands.registerCommand("Lift Position Three", safeLiftAuto(17).withTimeout(.5));
+        NamedCommands.registerCommand("Lift Position Four", safeLiftAuto(30).withTimeout(1));
 
         
         chooser = AutoBuilder.buildAutoChooser();
@@ -109,6 +112,10 @@ public class RobotContainer {
     
         // reset the field-centric heading on left bumper press
         driveController.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        // Slow mode
+        // driveController.rightTrigger().onChange(drivetrain.runOnce(() -> {
+        //     MaxSpeed = MaxSpeed == 1 ? TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) : 1;
+        // }));
 
         // climber
         driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop()); // in
@@ -125,37 +132,43 @@ public class RobotContainer {
 
         // Algae Intake`
         operatorController.leftTrigger().whileTrue(intakeSub.intakeAlgaeCommand()).whileFalse(intakeSub.stopIntake());
+        
+        
+        // Algea eject
+        operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
 
         // Run arm to Algea Position
-        operatorController.a().onTrue(armSub.runToRotationsMagic(5));
+        operatorController.a().onTrue(armSub.runToRotationsMagic(17));
 
         // Run arm to zero
         // stops arms so motion magic always returns to 
         
 
-        operatorController.b().onTrue(
-            armSub.runToRotationsMagic(0)
-            // .withTimeout(.1)
-            // .andThen(armSub.runToRotationsMagic(0))
-            // .withTimeout(.1)
-            // .andThen(armSub.stopArm())
-            // .withTimeout(.1)
-            // .andThen(armSub.runToRotationsMagic(0))
-            );
-
-        // Run arm to Algea eject Position
-        // operatorController.start().onTrue(armSub.runToRotationsMagic(21));
-        operatorController.start().onTrue(intakeSub.ejectIntake().until(intakeSub.stopEject()).andThen(intakeSub.stopIntake()));
-
-        // Algea eject
-        operatorController.rightTrigger().onTrue(intakeSub.ejectAlgae()).onFalse(intakeSub.stopIntake());
-
+        operatorController.b().onTrue(armSub.goToZero());
+        
         // homes arm and lift
         // moves lift down then arm in
         operatorController.x().onTrue(liftHome());
+        
+        // Eject algea to barge
+        // Run lift to max and Rotate arm to Algea eject position
+        operatorController.y().onTrue(safeLift(33).withTimeout(.5).andThen(armSub.runToRotationsMagic(15)));
+        
+
+        // Run arm to Algea eject Position
+        operatorController.start().onTrue(armSub.runToRotationsMagic(21));
+        // operatorController.start().whileTrue(liftSub.scrimageSetup(.1))
+        //                           .whileFalse(liftSub.liftStop());
+        // operatorController.start().onTrue(
+        //     liftSub.liftStop().
+        //     withTimeout(.1).
+        //     andThen(liftSub.zeroLift()).
+        //     andThen(armSub.zeroArm()));
+
+
 
         // Run lift to 0
-        operatorController.povDown().onTrue(safeLift(0).withTimeout(1.3).andThen(liftSub.liftStop()));
+        operatorController.povDown().onTrue(safeLift(0).until(liftSub.atBottom()).withTimeout(2).andThen(liftSub.liftStop()));
         
         // Run lift to level 1
         operatorController.povLeft().onTrue(safeLift(7));
@@ -165,16 +178,23 @@ public class RobotContainer {
         operatorController.povRight().onTrue(safeLift(16));
         
         // Run lift to level 3
-        operatorController.povUp().onTrue(safeLift(29));
+        operatorController.povUp().onTrue(safeLift(30));
+
         
-        // Eject algea to barge
-        // Run lift to max and Rotate arm to Algea eject position
-        operatorController.y().onTrue(safeLift(33).withTimeout(.5).andThen(armSub.runToRotationsMagic(15)));
 
     }
 
     // makes sure arm is out of the way before moving lift
     public Command safeLift(double rotations){
+        return armSub.runToRotationsMagic(5)
+                     .unless(armSub.canRaise())
+                     .until(armSub.canRaise())
+                     .withTimeout(2)
+                     .andThen(liftSub.runToRotations(rotations));
+                    //  .andThen(armSub.runToRotationsMagic(5));
+    }
+
+    public Command safeLiftAuto(double rotations){
         return armSub.runToRotationsMagic(2)
                      .unless(armSub.canRaise())
                      .until(armSub.canRaise())
@@ -184,10 +204,11 @@ public class RobotContainer {
 
     public Command liftHome(){
         return safeLift(0).
-            unless(liftSub.atBottom()).
-            until(liftSub.atBottom()).
             withTimeout(2).
-            andThen(armSub.runToRotationsMagic(0));
+            until(liftSub.atBottom()).
+            andThen(liftSub.liftStop().
+            andThen(armSub.goToZero())
+            );
     }
         
     public Command getAutonomousCommand() {
