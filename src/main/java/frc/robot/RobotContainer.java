@@ -46,7 +46,7 @@ public class RobotContainer {
     private final Intake intakeSub;
     private final Arm armSub;
     private final Lift liftSub;
-    private final Climber climberSub;
+    public final Climber climberSub;
     private final Telemetry logger; 
     
     private final SendableChooser<Command> chooser;
