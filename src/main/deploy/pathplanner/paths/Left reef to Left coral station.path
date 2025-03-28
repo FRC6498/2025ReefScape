@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.41,
-        "y": 5.09
+        "x": 5.45,
+        "y": 5.07
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.376277767455806,
-        "y": 5.388287152769447
+        "x": 5.4162777674558065,
+        "y": 5.368287152769447
       },
       "isLocked": false,
       "linkedName": "Ipos"
