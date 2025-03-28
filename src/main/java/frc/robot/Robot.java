@@ -9,6 +9,8 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.ledcontroller;
@@ -67,7 +69,12 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    CommandScheduler.getInstance().schedule(LEDsystem.LedRun(0,175,75));
+    if (Alliance.Blue == DriverStation.getAlliance().orElse(Alliance.Red)) {
+      CommandScheduler.getInstance().schedule(LEDsystem.LedRun(0,0,255));
+      
+    } else {
+      CommandScheduler.getInstance().schedule(LEDsystem.LedRun(255,0,0));
+    }
   }
 
   @Override
