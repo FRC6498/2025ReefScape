@@ -4,13 +4,17 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.ledcontroller;
@@ -22,7 +26,7 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-    
+          
     for (int i = 5800; i <= 5809; i++) {
       PortForwarder.add(i, "limelight.local", i); // adds the port to access limelight directly
     }
@@ -47,7 +51,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    CommandScheduler.getInstance().schedule(LEDsystem.LEDrainbow());
     ;
     
 
@@ -58,7 +61,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    
+    CommandScheduler.getInstance().schedule(LEDsystem.LEDrainbow());
   }
 
   @Override
@@ -69,11 +72,17 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    LEDPattern base = LEDPattern.solid(Color.kMediumTurquoise);
     if (Alliance.Blue == DriverStation.getAlliance().orElse(Alliance.Red)) {
       CommandScheduler.getInstance().schedule(LEDsystem.LedRun(0,0,255));
-      
+      base = LEDPattern.solid(Color.kBlue);
+      LEDPattern pattern = base.blink(Seconds.of(1));
+      pattern.applyTo(LEDsystem.m_ledBuffer);      
     } else {
       CommandScheduler.getInstance().schedule(LEDsystem.LedRun(255,0,0));
+      base = LEDPattern.solid(Color.kRed);
+      LEDPattern pattern = base.blink(Seconds.of(1));
+      pattern.applyTo(LEDsystem.m_ledBuffer);
     }
   }
 
