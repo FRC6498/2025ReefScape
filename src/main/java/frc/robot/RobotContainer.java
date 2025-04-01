@@ -113,9 +113,9 @@ public class RobotContainer {
         // reset the field-centric heading on left abumper press
         driveController.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         // Slow mode
-        // driveController.rightTrigger().onChange(drietrain.runOnce(() -> {
-        //     MaxSpeed = MaxSpeed == 1 ? TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) : 1;
-        // }));
+        driveController.rightTrigger().onChange(drivetrain.runOnce(() -> {
+            MaxSpeed = MaxSpeed == .5 ? TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) : .5;
+        }));
 
         // climber
         driveController.rightBumper().whileTrue(climberSub.runForward()).onFalse(climberSub.stop()); // in

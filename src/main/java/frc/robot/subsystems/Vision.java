@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import java.lang.StackWalker.Option;
 import java.util.Optional;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -35,7 +37,7 @@ public class Vision extends SubsystemBase {
 
     boolean doRejectUpdate = false;
     //cases when we should reject the latest update 
-    if (est.tagCount == 1 && est.rawFiducials.length == 1) {
+    if (est.tagCount >= 1 && est.rawFiducials.length >= 1) {
       SmartDashboard.putNumber("tag0 dist", est.rawFiducials[0].distToCamera);
       if (est.rawFiducials[0].ambiguity > .7) {
         doRejectUpdate = true;
@@ -58,5 +60,6 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
   }
 }

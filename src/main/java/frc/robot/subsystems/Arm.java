@@ -85,10 +85,11 @@ public class Arm extends SubsystemBase {
   public Command goToZero(){
     return runToRotationsMagic(0)
       .until(inIn())
+      .withTimeout(1)
       .andThen(run(()->armMotor.set(-0.05)))
       .until(
         ()-> armMotor.getVelocity().getValueAsDouble() == 0
-        && armPosition() < 0.3)
+        && armPosition() < .3)
       .andThen(stopArm());
   }
 
@@ -122,7 +123,7 @@ public class Arm extends SubsystemBase {
     return () -> armMotor.getPosition().getValueAsDouble() > 1.9;
   }
   public BooleanSupplier inIn(){
-    return () -> armPosition() < 1;
+    return () -> armPosition() < 2;
   }
 
   public double armPosition() {
